@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Dairy Farm Financial Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); }
+        .input-field { width: 100%; padding: 0.75rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; transition: border-color 0.2s; }
+        .input-field:focus { outline: none; border-color: #3B82F6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4); }
+        .label { font-weight: 500; color: #374151; }
+        .unit { color: #6B7280; font-size: 0.875rem; }
+        .section-title { font-size: 1.25rem; font-weight: 600; color: #111827; border-bottom: 2px solid #F3F4F6; padding-bottom: 0.75rem; margin-bottom: 1.5rem; }
+        .report-title { font-size: 1.75rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
+        .report-table { width: 100%; border-collapse: collapse; }
+        .report-table th, .report-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #E5E7EB; }
+        .report-table th { background-color: #F9FAFB; font-weight: 600; }
+        .sub-header td { background-color: #F3F4F6; font-weight: 600; }
+        .total-row td { font-weight: 700; }
+        .profit { color: #16A34A; }
+        .loss { color: #DC2626; }
+        .tab-button { padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        .tab-button.active { background-color: #3B82F6; color: white; }
+        .tab-button:not(.active) { background-color: #E5E7EB; color: #4B5563; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .action-btn { display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.75rem; background-color: #4B5563; color: white; padding: 0.75rem; border-radius: 0.5rem; text-align: center; font-weight: 600; transition: background-color 0.2s; cursor: pointer; gap: 0.5rem; }
+        .action-btn:hover { background-color: #374151; }
+        .action-btn:disabled { background-color: #9CA3AF; cursor: not-allowed; }
+        .download-btn { background-color: #10B981; }
+        .download-btn:hover { background-color: #059669; }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 2rem; border-radius: 0.75rem; max-width: 800px; width: 90%; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .scenario-btn { padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid #D1D5DB; }
+        .scenario-btn.active { background-color: #1D4ED8; color: white; border-color: #1D4ED8; }
+        .sub-section-title { font-weight: 600; color: #1F2937; margin-top: 1rem; margin-bottom: 0.5rem; }
+        
+        .tooltip-container { position: relative; display: inline-block; margin-left: 8px; }
+        .tooltip-icon { font-size: 0.75rem; font-weight: bold; color: #9CA3AF; cursor: pointer; border: 1px solid #9CA3AF; border-radius: 9999px; width: 1rem; height: 1rem; display: inline-flex; justify-content: center; align-items: center; }
+        .tooltip-text { visibility: hidden; width: 220px; background-color: #1F2937; color: #fff; text-align: center; border-radius: 6px; padding: 8px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; font-size: 0.75rem; font-weight: normal; }
+        .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
+        .flex-label { display: flex; align-items: center; }
+
+        @media print {
+            body { padding: 0; margin: 0; }
+            main.grid { display: block; }
+            .lg\\:col-span-1, header, footer { display: none; }
+            .lg\\:col-span-2 { width: 100%; }
+            .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .input-field { background-color: #f9f9f9; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 sm:p-6 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800">Advanced Dairy Farm Financial Planner</h1>
+            <p class="text-lg text-gray-600 mt-2">A comprehensive tool for projecting profitability and analyzing investments.</p>
+            <p class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-blue-600 mt-4">Developed By: MD AKRAMUL HAQUE, BCS (Livestock), DLS, Bangladesh</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Inputs -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Farm Size & Herd -->
+                <div class="card p-6">
+                    <h2 class="section-title">1. Farm Size & Herd Structure</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <div class="flex-label">
+                                <label for="totalCattle" class="label">Number of Initial Cows</label>
+                                <div class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <div class="tooltip-text">The total number of adult female cattle (milking + dry) you are starting the farm with.</div>
+                                </div>
+                            </div>
+                            <input type="number" id="totalCattle" class="input-field mt-1" value="20" oninput="calculate()">
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h3 class="font-semibold text-blue-800">Initial Herd Breakdown</h3>
+                            <div class="mt-2 space-y-1 text-sm">
+                                <p>Milking Cows (60%): <span id="milkingCows" class="font-bold">12</span></p>
+                                <p>Dry Cows (40%): <span id="dryCows" class="font-bold">8</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Herd Dynamics -->
+                 <div class="card p-6">
+                    <h2 class="section-title">2. Herd Dynamics Parameters</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <div class="flex-label"><label class="label text-sm">Calving Rate (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">The percentage of eligible cows expected to give birth in a year. Typically 85-95% in well-managed farms.</div></div></div>
+                            <input type="number" id="calvingRate" class="input-field mt-1" value="90" oninput="calculate()">
+                        </div>
+                        <div>
+                            <div class="flex-label"><label class="label text-sm">Calf Mortality (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">The percentage of calves that die before reaching one year. A lower number (e.g., <5%) indicates good management.</div></div></div>
+                            <input type="number" id="calfMortalityRate" class="input-field mt-1" value="5" oninput="calculate()">
+                        </div>
+                        <div>
+                            <div class="flex-label"><label class="label text-sm">Adult Mortality (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">The percentage of adult cows that die from disease or other causes per year. Aim for <2%.</div></div></div>
+                            <input type="number" id="adultMortalityRate" class="input-field mt-1" value="2" oninput="calculate()">
+                        </div>
+                        <div>
+                            <div class="flex-label"><label class="label text-sm">Culling Rate (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">The percentage of adult cows sold off each year due to low production, age, or health issues.</div></div></div>
+                            <input type="number" id="cullingRate" class="input-field mt-1" value="10" oninput="calculate()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capital Expenditure -->
+                <div class="card p-6">
+                    <h2 class="section-title">3. Capital (Fixed) Expenditure</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                        <div>
+                            <h3 class="sub-section-title">Infrastructure & Land</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                <div class="bg-yellow-50 p-3 rounded-lg text-sm">
+                                    <p>Est. Farmstead Land: <span id="farmsteadLand" class="font-bold">1.00</span> acres</p>
+                                    <p>Est. Fodder Land: <span id="fodderLand" class="font-bold">8.00</span> acres</p>
+                                </div>
+                                <div class="bg-teal-50 p-3 rounded-lg text-sm">
+                                     <h4 class="font-semibold text-teal-800">Estimated Shed Space (m²)</h4>
+                                     <p>Milking Shed: <span id="milkingShedSpace" class="font-bold">0</span> m²</p>
+                                     <p>Dry Cow Shed: <span id="dryCowShedSpace" class="font-bold">0</span> m²</p>
+                                     <p>Calf Shed: <span id="calfShedSpace" class="font-bold">0</span> m²</p>
+                                </div>
+                            </div>
+                            <div><label class="label">Farmstead Land Cost/Acre (BDT)</label><input type="number" id="farmsteadLandPrice" class="input-field mt-1" value="800000" oninput="calculate()"></div>
+                            <div class="mt-2"><label class="label">Fodder Land Cost/Acre (BDT)</label><input type="number" id="fodderLandPrice" class="input-field mt-1" value="500000" oninput="calculate()"></div>
+                            <div class="mt-4 space-y-2">
+                                <h3 class="sub-section-title !mt-0">Buildings & Sheds Costs</h3>
+                                <div><label class="label text-sm">Office Building (BDT)</label><input type="number" id="officeCost" class="input-field !p-2 text-sm mt-1" value="300000" oninput="calculate()"></div>
+                                <div><label class="label text-sm">Milking Cow Shed (BDT)</label><input type="number" id="milkingShedCost" class="input-field !p-2 text-sm mt-1" value="700000" oninput="calculate()"></div>
+                                <div><label class="label text-sm">Dry Cow Shed (BDT)</label><input type="number" id="dryCowShedCost" class="input-field !p-2 text-sm mt-1" value="350000" oninput="calculate()"></div>
+                                <div><label class="label text-sm">Calf Shed (BDT)</label><input type="number" id="calfShedCost" class="input-field !p-2 text-sm mt-1" value="150000" oninput="calculate()"></div>
+                            </div>
+                        </div>
+                         <div>
+                            <h3 class="sub-section-title">Livestock & Equipment</h3>
+                            <div><div class="flex-label"><label class="label">Purchase Price/Cow (BDT)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">Average cost to purchase one adult dairy cow.</div></div></div><input type="number" id="cowPrice" class="input-field mt-1" value="150000" oninput="calculate()"></div>
+                            <div class="mt-2"><label class="label">Equipment & Machinery (BDT)</label><input type="number" id="equipmentPrice" class="input-field mt-1" value="500000" oninput="calculate()"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operational Efficiency -->
+                <div class="card p-6">
+                    <h2 class="section-title">4. Operational Efficiency Inputs</h2>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div>
+                             <h3 class="sub-section-title">Energy & Water Usage</h3>
+                             <div class="grid grid-cols-2 gap-4">
+                                <div><label class="label text-sm">Energy (kWh/Cow/Day)</label><input type="number" id="energyUsagePerCow" class="input-field mt-1" value="0.5" oninput="calculate()"></div>
+                                <div><label class="label text-sm">Energy Price (BDT/kWh)</label><input type="number" id="energyPrice" class="input-field mt-1" value="10" oninput="calculate()"></div>
+                                <div><label class="label text-sm">Water (L/Cow/Day)</label><input type="number" id="waterUsagePerCow" class="input-field mt-1" value="100" oninput="calculate()"></div>
+                                <div><label class="label text-sm">Water Price (BDT/1000L)</label><input type="number" id="waterPrice" class="input-field mt-1" value="30" oninput="calculate()"></div>
+                             </div>
+                        </div>
+                        <div>
+                            <h3 class="sub-section-title">Feed Nutrient Analysis (for Optimization)</h3>
+                             <div class="grid grid-cols-3 gap-4">
+                                <div><div class="flex-label"><label class="label text-sm">Concentrate CP (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">Crude Protein content of your concentrate feed. E.g., 18-22%.</div></div></div><input type="number" id="concentrateCP" class="input-field mt-1" value="20" oninput="calculate()"></div>
+                                <div><div class="flex-label"><label class="label text-sm">Green Roughage CP (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">Crude Protein of green fodder like Napier grass. E.g., 8-12%.</div></div></div><input type="number" id="greenRoughageCP" class="input-field mt-1" value="10" oninput="calculate()"></div>
+                                <div><div class="flex-label"><label class="label text-sm">Dry Roughage CP (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">Crude Protein of dry fodder like rice straw. E.g., 3-5%.</div></div></div><input type="number" id="dryRoughageCP" class="input-field mt-1" value="4" oninput="calculate()"></div>
+                            </div>
+                        </div>
+                     </div>
+                     <div class="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                        <p><strong class="font-semibold">General Recommendation:</strong> The world's most profitable dairy farms meticulously track key input costs (feed, energy, water) per liter of milk produced. This practice enables precise cost management and continuous optimization for higher profitability.</p>
+                     </div>
+                </div>
+                
+                <!-- Recurring, Income & Funding -->
+                <div class="card p-6">
+                    <h2 class="section-title">5. Operations, Income & Funding</h2>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div class="space-y-4 md:col-span-2">
+                            <h3 class="sub-section-title border-b pb-2">Feed Costs (per Kg in BDT) & Daily Ration (Kg)</h3>
+                             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                                <div><label class="label">Concentrate Price</label><input type="number" id="concentratePrice" class="input-field mt-1" value="45" oninput="calculate()"></div>
+                                <div><label class="label">Green Roughage Price</label><input type="number" id="greenRoughagePrice" class="input-field mt-1" value="3" oninput="calculate()"></div>
+                                <div><label class="label">Dry Roughage Price</label><input type="number" id="dryRoughagePrice" class="input-field mt-1" value="10" oninput="calculate()"></div>
+                                <div class="p-2 bg-gray-50 rounded-lg text-sm">
+                                    <p class="font-semibold text-center">Total Daily Feed for Herd</p>
+                                    <p>Concentrate: <span id="totalDailyConc" class="font-bold">0</span> Kg</p>
+                                    <p>Green Roughage: <span id="totalDailyGreen" class="font-bold">0</span> Kg</p>
+                                    <p>Dry Roughage: <span id="totalDailyDry" class="font-bold">0</span> Kg</p>
+                                </div>
+                            </div>
+                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+                                <div class="p-3 bg-blue-50 rounded-lg">
+                                    <p class="font-semibold text-sm mb-2">Milking Cow Ration (Kg)</p>
+                                    <div class="flex gap-2"><label class="w-1/2">Conc.</label><input type="number" id="feed_mc_conc" class="input-field !p-1 text-sm" value="4" oninput="calculate()"></div>
+                                    <div class="flex gap-2 mt-1"><label class="w-1/2">Green</label><input type="number" id="feed_mc_green" class="input-field !p-1 text-sm" value="12" oninput="calculate()"></div>
+                                    <div class="flex gap-2 mt-1"><label class="w-1/2">Dry</label><input type="number" id="feed_mc_dry" class="input-field !p-1 text-sm" value="4" oninput="calculate()"></div>
+                                </div>
+                                 <div class="p-3 bg-indigo-50 rounded-lg">
+                                    <p class="font-semibold text-sm mb-2">Dry Cow Ration (Kg)</p>
+                                    <div class="flex gap-2"><label class="w-1/2">Conc.</label><input type="number" id="feed_dc_conc" class="input-field !p-1 text-sm" value="1.5" oninput="calculate()"></div>
+                                    <div class="flex gap-2 mt-1"><label class="w-1/2">Green</label><input type="number" id="feed_dc_green" class="input-field !p-1 text-sm" value="8" oninput="calculate()"></div>
+                                    <div class="flex gap-2 mt-1"><label class="w-1/2">Dry</label><input type="number" id="feed_dc_dry" class="input-field !p-1 text-sm" value="5" oninput="calculate()"></div>
+                                </div>
+                                <div class="p-3 bg-purple-50 rounded-lg">
+                                    <p class="font-semibold text-sm mb-2">Calf/Heifer Ration (Kg)</p>
+                                    <div class="flex gap-2"><label class="w-1/2">Conc.</label><input type="number" id="feed_c_conc" class="input-field !p-1 text-sm" value="1" oninput="calculate()"></div>
+                                    <div class="flex gap-2 mt-1"><label class="w-1/2">Green</label><input type="number" id="feed_c_green" class="input-field !p-1 text-sm" value="4" oninput="calculate()"></div>
+                                    <div class="flex gap-2 mt-1"><label class="w-1/2">Dry</label><input type="number" id="feed_c_dry" class="input-field !p-1 text-sm" value="0.5" oninput="calculate()"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                           <h3 class="sub-section-title">Recurring Costs (Annual)</h3>
+                            <div class="bg-green-50 p-3 rounded-lg text-sm mb-4">
+                                <h4 class="font-semibold text-green-800">Automated Staffing</h4>
+                                <p>Laborers (1 per 10 cows): <span id="laborerCount" class="font-bold">2</span></p>
+                            </div>
+                            <div class="mt-2"><label class="label">Laborer Salary/Head/Year</label><input type="number" id="laborSalary" class="input-field mt-1" value="120000" oninput="calculate()"></div>
+                            <div class="mt-2"><label class="label">Vet & Medicine/Cow/Year</label><input type="number" id="vetCost" class="input-field mt-1" value="5000" oninput="calculate()"></div>
+                            <div class="mt-2"><label class="label">Other Costs (Utilities, etc.) / Year</label><input type="number" id="otherCosts" class="input-field mt-1" value="100000" oninput="calculate()"></div>
+                        </div>
+                         <div>
+                           <h3 class="sub-section-title">Income Sources (Unit Price)</h3>
+                           <div><div class="flex-label"><label class="label">Avg. Daily Milk/Cow (L)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">The average amount of milk produced per milking cow each day over a lactation period (approx. 305 days).</div></div></div><input type="number" id="dailyMilkProduction" class="input-field mt-1" value="10" oninput="calculate()"></div>
+                           <div class="mt-2"><label class="label">Milk Price/L (BDT)</label><input type="number" id="milkPrice" class="input-field mt-1" value="60" oninput="calculate()"></div>
+                           <div class="mt-2"><label class="label">Culled Cow Sale Price/Head</label><input type="number" id="culledCowPrice" class="input-field mt-1" value="70000" oninput="calculate()"></div>
+                           <div class="mt-2"><label class="label">Male Calf Sale Price/Head</label><input type="number" id="maleCalfPrice" class="input-field mt-1" value="15000" oninput="calculate()"></div>
+                           <div class="mt-2"><label class="label">Heifer Calf Sale Price/Head</label><input type="number" id="heiferCalfPrice" class="input-field mt-1" value="40000" oninput="calculate()"></div>
+                           <div class="mt-2"><label class="label">Manure & Other Income/Year</label><input type="number" id="manureIncome" class="input-field mt-1" value="50000" oninput="calculate()"></div>
+                        </div>
+                        <div class="space-y-4 md:col-span-2 border-t pt-4">
+                            <h3 class="sub-section-title">Seasonal Adjustments</h3>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4 p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <label class="label text-sm mb-2 block">Peak Milk Production Months</label>
+                                    <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                        <script>['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((m,i)=>{ document.write(`<div class="flex items-center"><input type="checkbox" id="milk_${i}" name="peakMilkMonths" value="${i+1}" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" oninput="calculate()"><label for="milk_${i}" class="ml-2 block text-xs">${m}</label></div>`) })</script>
+                                    </div>
+                                </div>
+                                 <div><div class="flex-label"><label class="label text-sm">Peak Milk Incr. (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">During selected peak months, milk production will increase by this percentage.</div></div></div><input type="number" id="peakMilkIncrease" class="input-field mt-1" value="15" oninput="calculate()"></div>
+                                <div>
+                                    <label class="label text-sm mb-2 block">High Feed Cost Months</label>
+                                    <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                        <script>['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((m,i)=>{ document.write(`<div class="flex items-center"><input type="checkbox" id="feed_${i}" name="highFeedCostMonths" value="${i+1}" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" oninput="calculate()"><label for="feed_${i}" class="ml-2 block text-xs">${m}</label></div>`) })</script>
+                                    </div>
+                                </div>
+                                <div><div class="flex-label"><label class="label text-sm">Feed Cost Incr. (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">During selected high-cost months, feed prices will increase by this percentage.</div></div></div><input type="number" id="highFeedCostIncrease" class="input-field mt-1" value="20" oninput="calculate()"></div>
+                            </div>
+                        </div>
+
+                        <!-- Investment Analysis Module -->
+                        <div class="space-y-4 md:col-span-2 border-t pt-4">
+                            <h3 class="sub-section-title">Investment Analysis (Optional Technologies)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-gray-50 rounded-lg">
+                                <!-- Investment 1: Milking Machine -->
+                                <div class="p-3 bg-blue-50 rounded-lg">
+                                    <h4 class="font-semibold text-blue-800 mb-2">Milking Machine</h4>
+                                    <div><label class="label text-xs">Cost (BDT)</label><input type="number" id="inv_mm_cost" class="input-field !p-1 text-sm mt-1" value="250000" oninput="calculate()"></div>
+                                    <div class="mt-2"><label class="label text-xs">Annual Labor Savings (BDT)</label><input type="number" id="inv_mm_savings" class="input-field !p-1 text-sm mt-1" value="60000" oninput="calculate()"></div>
+                                    <div class="mt-2"><label class="label text-xs">Annual Income Incr. (BDT)</label><input type="number" id="inv_mm_income" class="input-field !p-1 text-sm mt-1" value="0" oninput="calculate()"></div>
+                                </div>
+                                <!-- Investment 2: Biogas Plant -->
+                                <div class="p-3 bg-green-50 rounded-lg">
+                                     <h4 class="font-semibold text-green-800 mb-2">Biogas Plant</h4>
+                                    <div><label class="label text-xs">Cost (BDT)</label><input type="number" id="inv_bg_cost" class="input-field !p-1 text-sm mt-1" value="150000" oninput="calculate()"></div>
+                                    <div class="mt-2"><label class="label text-xs">Annual Fuel/Fertilizer Savings (BDT)</label><input type="number" id="inv_bg_savings" class="input-field !p-1 text-sm mt-1" value="30000" oninput="calculate()"></div>
+                                    <div class="mt-2"><label class="label text-xs">Annual Slurry Income (BDT)</label><input type="number" id="inv_bg_income" class="input-field !p-1 text-sm mt-1" value="15000" oninput="calculate()"></div>
+                                </div>
+                                <!-- Investment 3: Fodder Chopper -->
+                                <div class="p-3 bg-purple-50 rounded-lg">
+                                     <h4 class="font-semibold text-purple-800 mb-2">Fodder Chopper</h4>
+                                    <div><label class="label text-xs">Cost (BDT)</label><input type="number" id="inv_fc_cost" class="input-field !p-1 text-sm mt-1" value="50000" oninput="calculate()"></div>
+                                    <div class="mt-2"><label class="label text-xs">Annual Feed Savings (BDT)</label><input type="number" id="inv_fc_savings" class="input-field !p-1 text-sm mt-1" value="25000" oninput="calculate()"></div>
+                                    <div class="mt-2"><label class="label text-xs">Annual Income Incr. (BDT)</label><input type="number" id="inv_fc_income" class="input-field !p-1 text-sm mt-1" value="0" oninput="calculate()"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 md:col-span-2 border-t pt-4">
+                            <h3 class="sub-section-title">Capital Funding & Financials</h3>
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <div id="capital-summary" class="mb-2"></div>
+                                     <div id="investment-inputs" class="space-y-2">
+                                         <div><label for="ownInvestment" class="label text-sm">Own Investment (BDT)</label><input type="number" id="ownInvestment" class="input-field mt-1" oninput="calculate()"></div>
+                                         <div><label for="bankLoan" class="label text-sm">Bank Loan (BDT)</label><input type="number" id="bankLoan" class="input-field mt-1" oninput="calculate()"></div>
+                                     </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div><div class="flex-label"><label class="label text-sm">Asset Depreciation/Year (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">The annual decrease in value of your fixed assets (buildings, equipment). 10% is a common rate.</div></div></div><input type="number" id="depreciationRate" class="input-field mt-1" value="10" oninput="calculate()"></div>
+                                    <div><div class="flex-label"><label class="label text-sm">Bank Interest Rate (%)</label><div class="tooltip-container"><span class="tooltip-icon">?</span><div class="tooltip-text">The annual interest rate for your bank loan. Also used as the discount rate for NPV calculation.</div></div></div><input type="number" id="interestRate" class="input-field mt-1" value="9" oninput="calculate()"></div>
+                                    <div><label class="label text-sm">Loan Term (Years)</label><input type="number" id="loanTerm" class="input-field mt-1" value="5" oninput="calculate()"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Financial Report -->
+            <div class="lg:col-span-1">
+                <div class="card p-4 sm:p-6 sticky top-8">
+                    <h2 class="report-title">Financial Report & Analysis</h2>
+                    <div class="mb-4">
+                        <label class="label mb-2 block text-center">Scenario Analysis</label>
+                        <div id="scenario-controls" class="flex justify-center space-x-2">
+                            <button class="scenario-btn" data-scenario="pessimistic">Pessimistic</button>
+                            <button class="scenario-btn active" data-scenario="base">Base</button>
+                            <button class="scenario-btn" data-scenario="optimistic">Optimistic</button>
+                        </div>
+                    </div>
+                    <div id="report-summary"></div>
+                    <div id="tabs-container"></div>
+                    <div id="report-container"><p class="text-center text-gray-500 p-4">Enter values to generate.</p></div>
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+                         <button id="guidelineBtn" class="action-btn col-span-2 bg-blue-600 hover:bg-blue-700">Dairy Farm Planning Guideline</button>
+                         <button id="kpiBtn" class="action-btn">Key Performance Indicators</button>
+                         <button id="monthlyCashFlowBtn" class="action-btn">Monthly Cash Flow</button>
+                         <button id="investmentAnalysisBtn" class="action-btn">Investment Analysis</button>
+                         <button id="operationalEfficiencyBtn" class="action-btn">Operational Efficiency</button>
+                         <button id="advancedMetricsBtn" class="action-btn col-span-2">Advanced Financial Metrics</button>
+                         <button id="amortizationBtn" class="action-btn">Loan Amortization</button>
+                         <button id="herdProjectionBtn" class="action-btn">Herd Projection</button>
+                         <button id="sensitivityBtn" class="action-btn">Sensitivity Analysis</button>
+                         <button id="breakEvenBtn" class="action-btn">Break-Even Analysis</button>
+                         <button id="visualizeBtn" class="action-btn col-span-2">Visualize Report</button>
+                         <button id="printBtn" class="action-btn download-btn">Print Report</button>
+                         <button id="downloadPdfBtn" class="action-btn download-btn">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="text-center mt-10 py-4 text-gray-500 text-xs">
+            <p>&copy; 2025 Md Akramul Haque. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="guidelineModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('guidelineModal')">&times;</span><h2 class="section-title">Guideline for Dairy Farm Planning</h2><div id="guidelineContent" class="text-sm space-y-4">
+        <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+            <label for="guidelineCows" class="label">Enter Your Target Number of Cows:</label>
+            <input type="number" id="guidelineCows" class="input-field mt-1" value="20" oninput="updateGuidelineRecommendations()">
+            <button class="action-btn !w-auto !inline-flex !px-4 !bg-blue-600 !hover:bg-blue-700 mt-2" onclick="applyGuidelineToForm()">Apply Recommendations to Form</button>
+        </div>
+        <p>This guide provides general recommendations and standard parameters based on your target herd size. Use these as a starting point and adjust based on local conditions.</p>
+        
+        <div>
+            <h3 class="font-semibold text-lg text-gray-800 mb-2">Phase 1: Initial Planning & Setup</h3>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>Land Requirements:</strong> Based on general rules for a farm of your size, the recommendations are:
+                    <ul class="list-disc list-inside ml-6">
+                        <li><strong>Farmstead Land (for sheds/office):</strong> <strong class="text-blue-600"><span id="guide_farmstead_land_rec">1.00</span> acres</strong>.</li>
+                        <li><strong>Fodder Land (for cultivation):</strong> <strong class="text-blue-600"><span id="guide_fodder_land_rec">4.00</span> acres</strong>.</li>
+                    </ul>
+                </li>
+                <li><strong>Housing Space:</strong> Proper space is crucial for animal health. Your estimated requirements are:
+                    <ul class="list-disc list-inside ml-6">
+                        <li><strong>Milking Cow Shed:</strong> <strong class="text-blue-600"><span id="guide_milking_shed_rec">36.0</span> m²</strong> (at 3 m²/cow).</li>
+                        <li><strong>Dry Cow Shed:</strong> <strong class="text-blue-600"><span id="guide_dry_cow_shed_rec">24.0</span> m²</strong> (at 3 m²/cow).</li>
+                        <li><strong>Calf/Heifer Shed:</strong> <strong class="text-blue-600"><span id="guide_calf_shed_rec">14</span> m²</strong> (at 1.5 m²/calf, based on Year 1 projection).</li>
+                    </ul>
+                </li>
+                 <li><strong>Capital Budgeting:</strong> Your initial investment is a major hurdle. Ensure you have a clear funding plan, whether from own investment, bank loans, or a mix.</li>
+            </ul>
+        </div>
+
+        <div>
+            <h3 class="font-semibold text-lg text-gray-800 mb-2">Phase 2: Operational Parameters</h3>
+             <ul class="list-disc list-inside space-y-2">
+                <li><strong>Herd Dynamics (Targets for a good farm):</strong>
+                    <ul class="list-disc list-inside ml-6">
+                        <li><strong>Calving Rate:</strong> Aim for > 85%.</li>
+                        <li><strong>Calf Mortality:</strong> Keep below 5%.</li>
+                        <li><strong>Adult Mortality:</strong> Keep below 2%.</li>
+                    </ul>
+                </li>
+                <li><strong>Feeding Strategy:</strong> Feed is your biggest operational cost (~60-70%). A balanced ration is essential. A typical adult cow consumes 2-3% of its body weight in dry matter daily.</li>
+                 <li><strong>Labor Management:</strong> A general rule is <strong>1 laborer for every 10-15 cows</strong>. For your farm, this means <strong class="text-blue-600"><span id="guide_labor_rec">2</span> laborers</strong> are recommended.</li>
+            </ul>
+        </div>
+        
+        <div>
+            <h3 class="font-semibold text-lg text-gray-800 mb-2">Phase 3: Operational Efficiency</h3>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>Utility Management:</strong> Monitor usage to control costs. Typical daily targets per cow are:
+                    <ul class="list-disc list-inside ml-6">
+                        <li><strong>Energy:</strong> 0.5 - 1.0 kWh/cow/day.</li>
+                        <li><strong>Water:</strong> 80 - 120 Liters/cow/day (for drinking and cleaning).</li>
+                    </ul>
+                </li>
+                <li><strong>Feed Quality:</strong> The nutritional content of your feed is critical for milk production. Typical Crude Protein (CP) percentages are:
+                     <ul class="list-disc list-inside ml-6">
+                        <li><strong>Concentrate Feed:</strong> 18-22% CP.</li>
+                        <li><strong>Green Roughage (e.g., Napier):</strong> 8-12% CP.</li>
+                        <li><strong>Dry Roughage (e.g., Rice Straw):</strong> 3-5% CP.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        
+         <div>
+            <h3 class="font-semibold text-lg text-gray-800 mb-2">Phase 4: Financial Analysis</h3>
+             <ul class="list-disc list-inside space-y-2">
+                <li><strong>Net Present Value (NPV):</strong> If positive, the project is considered financially viable.</li>
+                <li><strong>Internal Rate of Return (IRR):</strong> Aim for an IRR significantly higher than the bank interest rate.</li>
+                 <li><strong>Break-Even Point:</strong> Know the minimum milk price or production level needed to cover your costs.</li>
+                  <li><strong>Debt Service Coverage Ratio (DSCR):</strong> Lenders want to see a DSCR of at least 1.25.</li>
+                  <li><strong>Addressing Negative NPV or IRR:</strong> If your project is not profitable, consider these steps:
+                    <ul class="list-[circle] list-inside ml-6 mt-1 space-y-1">
+                        <li><strong>Reduce Initial Investment:</strong> Start smaller, lease land, phase construction, or buy used equipment.</li>
+                        <li><strong>Increase Revenue:</strong> Improve milk yield per cow (genetics, nutrition) or seek better milk prices.</li>
+                        <li><strong>Decrease Operating Costs:</strong> Use the "Operational Efficiency" analysis to find the cheapest protein sources and grow your own fodder.</li>
+                        <li><strong>Improve Herd Health:</strong> Lower vet costs and improve production with good biosecurity and hygiene.</li>
+                        <li><strong>Re-evaluate Financing:</strong> Seek loans with lower interest rates or increase your own investment.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+    </div></div></div>
+    <div id="kpiModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('kpiModal')">&times;</span><h2 class="section-title">Key Performance Indicators (5-Year Averages)</h2><div id="kpiContent"></div></div></div>
+    <div id="operationalEfficiencyModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('operationalEfficiencyModal')">&times;</span><h2 class="section-title">Operational Efficiency Analysis (Year 1)</h2><div id="operationalEfficiencyContent"></div></div></div>
+    <div id="monthlyCashFlowModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('monthlyCashFlowModal')">&times;</span><h2 class="section-title">Year 1 Monthly Cash Flow Projection</h2><div id="monthlyCashFlowContent"></div></div></div>
+    <div id="investmentAnalysisModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('investmentAnalysisModal')">&times;</span><h2 class="section-title">Investment Analysis</h2><div id="investmentAnalysisContent"></div></div></div>
+    <div id="amortizationModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('amortizationModal')">&times;</span><h2 class="section-title">Loan Amortization Schedule</h2><div id="amortizationContent"></div></div></div>
+    <div id="chartModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('chartModal')">&times;</span><h2 class="section-title">5-Year Financial Summary</h2><canvas id="financialChart"></canvas></div></div>
+    <div id="herdProjectionModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('herdProjectionModal')">&times;</span><h2 class="section-title">5-Year Herd Growth Projection</h2><div id="herdProjectionContent"></div></div></div>
+    <div id="sensitivityModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('sensitivityModal')">&times;</span><h2 class="section-title">Sensitivity Analysis</h2><p class="text-gray-600 mb-4">Impact of a 10% change in key variables on Year 1 Net Profit.</p><div id="sensitivityContent"></div></div></div>
+    <div id="breakEvenModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('breakEvenModal')">&times;</span><h2 class="section-title">Break-Even Analysis</h2><div id="breakEvenContent"></div></div></div>
+    <div id="advancedMetricsModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('advancedMetricsModal')">&times;</span><h2 class="section-title">Advanced Financial Metrics</h2><div id="advancedMetricsContent"></div></div></div>
+    
+    <script>
+        // --- GLOBAL STATE ---
+        let reportData = {};
+        let financialChartInstance;
+        let activeScenario = 'base';
+
+        // --- UTILITY FUNCTIONS ---
+        const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
+        const getInt = (id) => parseInt(document.getElementById(id).value) || 0;
+        const setVal = (id, value) => { if(document.getElementById(id)) document.getElementById(id).value = value; };
+        const setHTML = (id, html) => { if(document.getElementById(id)) document.getElementById(id).innerHTML = html };
+        const openModal = (id) => document.getElementById(id).style.display = 'block';
+        const closeModal = (id) => document.getElementById(id).style.display = 'none';
+        
+        function formatCurrency(value) {
+            if (isNaN(value)) return 'N/A';
+            return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+        }
+
+        const debounce = (func, delay) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => func.apply(this, a), delay); }; };
+
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const button = document.querySelector(`[onclick="openTab('${tabName}')"]`);
+            if (button) button.classList.add('active');
+            const tabContent = document.getElementById(tabName);
+            if (tabContent) tabContent.classList.add('active');
+        }
+
+        // --- CORE CALCULATION ---
+        function calculate() {
+            const getCheckedMonths = (name) => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => parseInt(cb.value));
+
+            const baseInputs = {
+                totalCattle: getInt('totalCattle'), 
+                farmsteadLandPrice: getVal('farmsteadLandPrice'),
+                fodderLandPrice: getVal('fodderLandPrice'),
+                officeCost: getVal('officeCost'),
+                milkingShedCost: getVal('milkingShedCost'),
+                dryCowShedCost: getVal('dryCowShedCost'),
+                calfShedCost: getVal('calfShedCost'),
+                cowPrice: getVal('cowPrice'), 
+                equipmentPrice: getVal('equipmentPrice'),
+                concentratePrice: getVal('concentratePrice'), 
+                greenRoughagePrice: getVal('greenRoughagePrice'), 
+                dryRoughagePrice: getVal('dryRoughagePrice'),
+                feed: {
+                    mc: { conc: getVal('feed_mc_conc'), green: getVal('feed_mc_green'), dry: getVal('feed_mc_dry') },
+                    dc: { conc: getVal('feed_dc_conc'), green: getVal('feed_dc_green'), dry: getVal('feed_dc_dry') },
+                    c: { conc: getVal('feed_c_conc'), green: getVal('feed_c_green'), dry: getVal('feed_c_dry') }
+                },
+                laborSalary: getVal('laborSalary'), 
+                vetCost: getVal('vetCost'), 
+                otherCosts: getVal('otherCosts'),
+                dailyMilkProduction: getVal('dailyMilkProduction'), 
+                milkPrice: getVal('milkPrice'), 
+                culledCowPrice: getVal('culledCowPrice'), 
+                maleCalfPrice: getVal('maleCalfPrice'), 
+                heiferCalfPrice: getVal('heiferCalfPrice'),
+                manureIncome: getVal('manureIncome'),
+                ownInvestment: getVal('ownInvestment'), 
+                bankLoan: getVal('bankLoan'), 
+                interestRate: getVal('interestRate') / 100, 
+                loanTerm: getInt('loanTerm'), 
+                depreciationRate: getVal('depreciationRate') / 100,
+                calvingRate: getVal('calvingRate') / 100, 
+                calfMortalityRate: getVal('calfMortalityRate') / 100, 
+                adultMortalityRate: getVal('adultMortalityRate') / 100, 
+                cullingRate: getVal('cullingRate') / 100,
+                seasonal: {
+                    peakMilkMonths: getCheckedMonths('peakMilkMonths'),
+                    peakMilkIncrease: getVal('peakMilkIncrease') / 100,
+                    highFeedCostMonths: getCheckedMonths('highFeedCostMonths'),
+                    highFeedCostIncrease: getVal('highFeedCostIncrease') / 100,
+                },
+                investments: {
+                    mm: { cost: getVal('inv_mm_cost'), savings: getVal('inv_mm_savings'), income: getVal('inv_mm_income') },
+                    bg: { cost: getVal('inv_bg_cost'), savings: getVal('inv_bg_savings'), income: getVal('inv_bg_income') },
+                    fc: { cost: getVal('inv_fc_cost'), savings: getVal('inv_fc_savings'), income: getVal('inv_fc_income') }
+                },
+                efficiency: {
+                    energyUsagePerCow: getVal('energyUsagePerCow'),
+                    energyPrice: getVal('energyPrice'),
+                    waterUsagePerCow: getVal('waterUsagePerCow'),
+                    waterPrice: getVal('waterPrice'),
+                    concentrateCP: getVal('concentrateCP'),
+                    greenRoughageCP: getVal('greenRoughageCP'),
+                    dryRoughageCP: getVal('dryRoughageCP'),
+                }
+            };
+
+            const scenarioMultiplier = { income: 1, cost: 1 };
+            if (activeScenario === 'optimistic') { scenarioMultiplier.income = 1.1; scenarioMultiplier.cost = 0.9; }
+            if (activeScenario === 'pessimistic') { scenarioMultiplier.income = 0.9; scenarioMultiplier.cost = 1.1; }
+            
+            const inputs = JSON.parse(JSON.stringify(baseInputs));
+            inputs.milkPrice *= scenarioMultiplier.income; 
+            inputs.culledCowPrice *= scenarioMultiplier.income;
+            inputs.maleCalfPrice *= scenarioMultiplier.income;
+            inputs.heiferCalfPrice *= scenarioMultiplier.income;
+            inputs.concentratePrice *= scenarioMultiplier.cost;
+            inputs.greenRoughagePrice *= scenarioMultiplier.cost;
+            inputs.dryRoughagePrice *= scenarioMultiplier.cost;
+            inputs.vetCost *= scenarioMultiplier.cost;
+
+            const adultHerdSize = inputs.totalCattle;
+            const initialMilkingCows = Math.round(adultHerdSize * 0.6);
+            const initialDryCows = adultHerdSize - initialMilkingCows;
+            const initialCalvesBorn = initialMilkingCows * inputs.calvingRate;
+            const initialCalfDeaths = initialCalvesBorn * inputs.calfMortalityRate;
+            const initialSurvivingCalves = Math.ceil(initialCalvesBorn - initialCalfDeaths);
+
+            setHTML('milkingShedSpace', (initialMilkingCows * 3).toFixed(1));
+            setHTML('dryCowShedSpace', (initialDryCows * 3).toFixed(1));
+            setHTML('calfShedSpace', (initialSurvivingCalves * 1.5).toFixed(1));
+
+            setHTML('milkingCows', initialMilkingCows);
+            setHTML('dryCows', initialDryCows);
+            setHTML('farmsteadLand', (adultHerdSize / 20).toFixed(2));
+            setHTML('fodderLand', (adultHerdSize * 8 / 20).toFixed(2));
+
+            const landCost = (adultHerdSize / 20 * inputs.farmsteadLandPrice) + (adultHerdSize * 8 / 20 * inputs.fodderLandPrice);
+            const totalBuildingCost = inputs.officeCost + inputs.milkingShedCost + inputs.dryCowShedCost + inputs.calfShedCost;
+
+            const capital = {
+                land: landCost, buildings: totalBuildingCost, cows: adultHerdSize * inputs.cowPrice, equipment: inputs.equipmentPrice,
+                total: landCost + totalBuildingCost + (adultHerdSize * inputs.cowPrice) + inputs.equipmentPrice
+            };
+            setHTML('capital-summary', `<div class="p-3 bg-gray-100 rounded-lg text-center"><h4 class="font-semibold">Total Initial Investment</h4><p class="text-xl font-bold text-gray-800">${formatCurrency(capital.total)}</p></div>`);
+
+            reportData.yearly = [];
+            let loanBalance = inputs.bankLoan;
+            
+            for (let year = 1; year <= 5; year++) {
+                const milkingCows = Math.round(adultHerdSize * 0.6);
+                const dryCows = adultHerdSize - milkingCows;
+                
+                const adultDeaths = Math.round(adultHerdSize * inputs.adultMortalityRate);
+                const culledCows = Math.round(adultHerdSize * inputs.cullingRate);
+                const replacementsNeeded = adultDeaths + culledCows;
+
+                const calvesBorn = milkingCows * inputs.calvingRate;
+                const calfDeaths = calvesBorn * inputs.calfMortalityRate;
+                const survivingCalves = Math.ceil(calvesBorn - calfDeaths);
+                const femaleCalves = Math.round(survivingCalves * 0.5);
+                const maleCalves = survivingCalves - femaleCalves;
+
+                const heifersToSell = Math.max(0, femaleCalves - replacementsNeeded);
+                const youngStockToFeed = survivingCalves;
+                
+                const laborers = Math.ceil(adultHerdSize / 10);
+                if (year === 1) {
+                    setHTML('laborerCount', laborers);
+                }
+
+                const totalDailyConc = (milkingCows * inputs.feed.mc.conc) + (dryCows * inputs.feed.dc.conc) + (youngStockToFeed * inputs.feed.c.conc);
+                const totalDailyGreen = (milkingCows * inputs.feed.mc.green) + (dryCows * inputs.feed.dc.green) + (youngStockToFeed * inputs.feed.c.green);
+                const totalDailyDry = (milkingCows * inputs.feed.mc.dry) + (dryCows * inputs.feed.dc.dry) + (youngStockToFeed * inputs.feed.c.dry);
+                if (year === 1) {
+                    setHTML('totalDailyConc', totalDailyConc.toFixed(1));
+                    setHTML('totalDailyGreen', totalDailyGreen.toFixed(1));
+                    setHTML('totalDailyDry', totalDailyDry.toFixed(1));
+                }
+
+                const income = {
+                    milk: milkingCows * 305 * inputs.dailyMilkProduction * inputs.milkPrice,
+                    maleCalves: maleCalves * inputs.maleCalfPrice,
+                    culledCows: culledCows * inputs.culledCowPrice,
+                    heiferCalves: heifersToSell * inputs.heiferCalfPrice,
+                    manure: inputs.manureIncome,
+                };
+                income.total = income.milk + income.maleCalves + income.culledCows + income.heiferCalves + income.manure;
+
+                const animalsToFeed = adultHerdSize + youngStockToFeed;
+                const feedCostMilking = milkingCows * 365 * ((inputs.feed.mc.conc * inputs.concentratePrice) + (inputs.feed.mc.green * inputs.greenRoughagePrice) + (inputs.feed.mc.dry * inputs.dryRoughagePrice));
+                const feedCostDry = dryCows * 365 * ((inputs.feed.dc.conc * inputs.concentratePrice) + (inputs.feed.dc.green * inputs.greenRoughagePrice) + (inputs.feed.dc.dry * inputs.dryRoughagePrice));
+                const feedCostYoungStock = youngStockToFeed * 365 * ((inputs.feed.c.conc * inputs.concentratePrice) + (inputs.feed.c.green * inputs.greenRoughagePrice) + (inputs.feed.c.dry * inputs.dryRoughagePrice));
+                const totalFeedCost = feedCostMilking + feedCostDry + feedCostYoungStock;
+
+                const annualEnergyCost = animalsToFeed * inputs.efficiency.energyUsagePerCow * 365 * inputs.efficiency.energyPrice;
+                const annualWaterCost = animalsToFeed * inputs.efficiency.waterUsagePerCow * 365 * (inputs.efficiency.waterPrice / 1000);
+
+                const annualInterest = loanBalance * inputs.interestRate;
+                const monthlyPayment = (inputs.loanTerm > 0 && inputs.bankLoan > 0) ? ((inputs.bankLoan * (inputs.interestRate/12)) / (1 - Math.pow(1 + (inputs.interestRate/12), -inputs.loanTerm * 12))) : 0;
+                const annualLoanPayment = year <= inputs.loanTerm ? monthlyPayment * 12 : 0;
+                const annualPrincipalPayment = annualLoanPayment - annualInterest > 0 ? annualLoanPayment - annualInterest : 0;
+
+                const expenses = {
+                    feed: totalFeedCost,
+                    labor: laborers * inputs.laborSalary,
+                    vet: animalsToFeed * inputs.vetCost,
+                    other: inputs.otherCosts + annualEnergyCost + annualWaterCost,
+                    interest: annualInterest,
+                    depreciation: (capital.buildings + capital.equipment) * inputs.depreciationRate,
+                    energy: annualEnergyCost,
+                    water: annualWaterCost
+                };
+                expenses.total = expenses.feed + expenses.labor + expenses.vet + expenses.other + expenses.interest + expenses.depreciation;
+                
+                const netProfit = income.total - expenses.total;
+                const cashFlow = { net: netProfit + expenses.depreciation - annualPrincipalPayment };
+                
+                reportData.yearly.push({ year, herd: {total: adultHerdSize, milkingCows, youngStock: youngStockToFeed}, income, expenses, netProfit, cashFlow, loan: { interest: annualInterest, principal: annualPrincipalPayment, totalPayment: annualLoanPayment } });
+                
+                loanBalance -= annualPrincipalPayment;
+                if(loanBalance < 0) loanBalance = 0;
+            }
+            
+            reportData.inputs = baseInputs;
+            reportData.capital = capital;
+            calculateAndStoreMonthlyData(inputs);
+            calculateAdvancedMetrics(inputs);
+            
+            const npv = calculateNPV();
+            reportData.npv = npv;
+
+            setHTML('report-summary', `
+                <div class="space-y-2 text-sm">
+                     <div class="flex justify-between p-2 bg-gray-50 rounded"><span>Net Present Value (NPV):</span><span class="font-bold ${npv > 0 ? 'profit' : 'loss'}">${formatCurrency(npv)}</span></div>
+                     <div class="flex justify-between p-2"><span>Net Profit (Year 1):</span><span class="font-bold ${reportData.yearly[0].netProfit > 0 ? 'profit' : 'loss'}">${formatCurrency(reportData.yearly[0].netProfit)}</span></div>
+                </div>`);
+
+            let yearlyTabs = `<div id="tabs" class="flex items-center justify-center space-x-1 mb-4 border-b pb-2 overflow-x-auto">`;
+            let yearlyReportsHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                yearlyTabs += `<button class="tab-button ${i===1 ? 'active' : ''}" onclick="openTab('year${i}')">Yr ${i}</button>`;
+                const d = reportData.yearly[i-1];
+                yearlyReportsHTML += `<div id="year${i}" class="tab-content ${i===1 ? 'active' : ''}">${generateYearHTML(d)}</div>`;
+            }
+            yearlyTabs += `</div>`;
+            setHTML('tabs-container', yearlyTabs);
+            setHTML('report-container', yearlyReportsHTML);
+        }
+
+        function calculateAndStoreMonthlyData(inputs) {
+            const year1 = reportData.yearly[0];
+            const monthlyData = [];
+            let cumulativeCash = inputs.ownInvestment;
+
+            const monthlyPayment = (inputs.loanTerm > 0 && inputs.bankLoan > 0) ? ((inputs.bankLoan * (inputs.interestRate/12)) / (1 - Math.pow(1 + (inputs.interestRate/12), -inputs.loanTerm * 12))) : 0;
+            
+            const monthlyOtherIncome = (year1.income.maleCalves + year1.income.culledCows + year1.income.heiferCalves + year1.income.manure) / 12;
+            const monthlyLabor = year1.expenses.labor / 12;
+            const monthlyVet = year1.expenses.vet / 12;
+            const monthlyOtherCosts = (year1.expenses.other) / 12; // Energy and water are now included in 'other'
+            
+            for (let i = 1; i <= 12; i++) {
+                let milkMultiplier = 1.0;
+                if (inputs.seasonal.peakMilkMonths.includes(i)) milkMultiplier = 1.0 + inputs.seasonal.peakMilkIncrease;
+                
+                let feedMultiplier = 1.0;
+                if (inputs.seasonal.highFeedCostMonths.includes(i)) feedMultiplier = 1.0 + inputs.seasonal.highFeedCostIncrease;
+
+                const monthlyMilkIncome = (year1.income.milk / 12) * milkMultiplier;
+                const monthlyFeedCost = (year1.expenses.feed / 12) * feedMultiplier;
+
+                const cashIn = monthlyMilkIncome + monthlyOtherIncome;
+                const cashOut = monthlyFeedCost + monthlyLabor + monthlyVet + monthlyOtherCosts + monthlyPayment;
+                const netCashFlow = cashIn - cashOut;
+                cumulativeCash += netCashFlow;
+
+                monthlyData.push({
+                    month: new Date(2024, i-1, 1).toLocaleString('default', { month: 'long' }),
+                    cashIn, cashOut, netCashFlow, cumulativeCash
+                });
+            }
+            reportData.monthly = monthlyData;
+        }
+
+        function calculateNPV(discountRate, cashFlows) {
+             if (!cashFlows) {
+                if (!reportData.capital || !reportData.yearly) return 0;
+                cashFlows = [-reportData.capital.total, ...reportData.yearly.map(y => y.cashFlow.net)];
+            }
+            if(!discountRate && discountRate !== 0) discountRate = reportData.inputs.interestRate;
+            return cashFlows.reduce((acc, val, i) => acc + val / Math.pow(1 + discountRate, i), 0);
+        }
+
+        function calculateIRR() {
+            const cashFlows = [-reportData.capital.total, ...reportData.yearly.map(y => y.cashFlow.net)];
+            let low = -1.0;
+            let high = 1.0;
+            let irr = 0.0;
+            let npv = 0;
+            const precision = 0.0001;
+            const maxIterations = 100;
+
+            for (let i = 0; i < maxIterations; i++) {
+                irr = (low + high) / 2;
+                npv = calculateNPV(irr, cashFlows);
+
+                if (Math.abs(npv) < precision) {
+                    return irr;
+                }
+                if (npv > 0) {
+                    low = irr;
+                } else {
+                    high = irr;
+                }
+            }
+            return irr; // Return approximation if not found
+        }
+
+        function calculateAdvancedMetrics(inputs) {
+            const metrics = {};
+            
+            // IRR
+            metrics.irr = calculateIRR();
+
+            // DSCR
+            metrics.dscr = reportData.yearly.map(y => {
+                const netOperatingIncome = y.netProfit + y.expenses.interest + y.expenses.depreciation;
+                const debtService = y.loan.totalPayment;
+                if (debtService > 0) {
+                    return netOperatingIncome / debtService;
+                }
+                return Infinity;
+            });
+
+            // Working Capital for Year 1
+            const year1OperatingExpenses = reportData.yearly[0].expenses.total - reportData.yearly[0].expenses.depreciation - reportData.yearly[0].expenses.interest;
+            metrics.workingCapital = year1OperatingExpenses / 6; // 2 months of operating expenses
+
+            // Liquidity for Year 1
+            const year1EndCash = reportData.monthly[11].cumulativeCash;
+            const currentLiabilities = reportData.yearly[1] ? reportData.yearly[1].loan.totalPayment : 0; // Debt due in next year
+            metrics.currentRatio = currentLiabilities > 0 ? year1EndCash / currentLiabilities : Infinity;
+
+            // Yearly NPVs
+            const yearlyNpvs = [];
+            let cumulativeNpv = -reportData.capital.total;
+            reportData.yearly.forEach(y => {
+                cumulativeNpv += y.cashFlow.net / Math.pow(1 + inputs.interestRate, y.year);
+                yearlyNpvs.push(cumulativeNpv);
+            });
+            metrics.yearlyNpvs = yearlyNpvs;
+            
+            reportData.advancedMetrics = metrics;
+        }
+
+        // --- MODALS & UI FUNCTIONS ---
+        function generateYearHTML(data) {
+             const profitLossClass = data.netProfit >= 0 ? 'profit' : 'loss';
+            return `<table class="report-table text-sm">
+                <tr class="sub-header"><td colspan="2">Income</td></tr>
+                <tr><td>Milk Sales</td><td class="text-right">${formatCurrency(data.income.milk)}</td></tr>
+                <tr><td>Male Calf Sales</td><td class="text-right">${formatCurrency(data.income.maleCalves)}</td></tr>
+                <tr><td>Heifer Calf Sales</td><td class="text-right">${formatCurrency(data.income.heiferCalves)}</td></tr>
+                <tr><td>Culled Cow Sales</td><td class="text-right">${formatCurrency(data.income.culledCows)}</td></tr>
+                <tr><td>Manure & Other</td><td class="text-right">${formatCurrency(data.income.manure)}</td></tr>
+                <tr class="total-row"><td>Total Income</td><td class="text-right">${formatCurrency(data.income.total)}</td></tr>
+                <tr class="sub-header"><td colspan="2">Expenses</td></tr>
+                <tr><td>Feed</td><td class="text-right">${formatCurrency(data.expenses.feed)}</td></tr>
+                <tr><td>Labor</td><td class="text-right">${formatCurrency(data.expenses.labor)}</td></tr>
+                <tr><td>Vet & Medicine</td><td class="text-right">${formatCurrency(data.expenses.vet)}</td></tr>
+                <tr><td>Other Costs</td><td class="text-right">${formatCurrency(data.expenses.other)}</td></tr>
+                <tr><td>Interest</td><td class="text-right">${formatCurrency(data.expenses.interest)}</td></tr>
+                <tr><td>Depreciation</td><td class="text-right">${formatCurrency(data.expenses.depreciation)}</td></tr>
+                <tr class="total-row"><td>Total Expenses</td><td class="text-right">${formatCurrency(data.expenses.total)}</td></tr>
+                <tr class="total-row font-bold text-lg"><td class="${profitLossClass}">Net Profit</td><td class="text-right ${profitLossClass}">${formatCurrency(data.netProfit)}</td></tr>
+            </table>`;
+        }
+
+        function showKPIs() {
+            if (!reportData.yearly) return;
+            const avgProfit = reportData.yearly.reduce((s, y) => s + y.netProfit, 0) / 5;
+            const avgROI = (avgProfit / reportData.capital.total * 100);
+            const avgProfitPerCow = avgProfit / reportData.inputs.totalCattle; // Based on fixed adult herd
+            const avgMilkIncome = reportData.yearly.reduce((s, y) => s + y.income.milk, 0) / 5;
+            const avgFeedCost = reportData.yearly.reduce((s, y) => s + y.expenses.feed, 0) / 5;
+            const feedCostPercentage = (avgFeedCost > 0 && avgMilkIncome > 0) ? (avgFeedCost / avgMilkIncome * 100) : 0;
+
+            setHTML('kpiContent', `
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="p-4 bg-blue-50 rounded-lg"><p class="text-2xl font-bold">${avgROI.toFixed(2)}%</p><p class="text-sm text-gray-600">Avg. Return on Investment</p></div>
+                    <div class="p-4 bg-green-50 rounded-lg"><p class="text-2xl font-bold">${formatCurrency(avgProfitPerCow)}</p><p class="text-sm text-gray-600">Avg. Profit / Cow / Year</p></div>
+                    <div class="p-4 bg-yellow-50 rounded-lg"><p class="text-2xl font-bold">${feedCostPercentage.toFixed(2)}%</p><p class="text-sm text-gray-600">Feed Cost as % of Milk Income</p></div>
+                    <div class="p-4 bg-indigo-50 rounded-lg"><p class="text-2xl font-bold">${formatCurrency(avgProfit)}</p><p class="text-sm text-gray-600">Avg. Annual Net Profit</p></div>
+                </div>`);
+            openModal('kpiModal');
+        }
+
+        function showAmortization() {
+            const { bankLoan, interestRate, loanTerm } = reportData.inputs;
+            if (bankLoan <= 0 || loanTerm <= 0) {
+                document.getElementById('amortizationContent').innerHTML = '<p class="text-center text-red-500">Please enter a valid Bank Loan amount and Term.</p>';
+            } else {
+                let balance = bankLoan;
+                const monthlyRate = interestRate / 12;
+                const monthlyPayment = monthlyRate > 0 ? (bankLoan * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -loanTerm * 12)) : bankLoan / (loanTerm * 12);
+
+                let html = `<p class="mb-2 text-center"><strong>Monthly Payment:</strong> ${formatCurrency(monthlyPayment)}</p>
+                    <div class="max-h-96 overflow-y-auto"><table class="report-table w-full text-sm"><thead><tr><th>Year</th><th>Beginning Balance</th><th>Total Payments</th><th>Principal Paid</th><th>Interest Paid</th><th>Ending Balance</th></tr></thead><tbody>`;
+                for (let y = 1; y <= loanTerm; y++) {
+                    let yearStart = balance; let yearlyInterest = 0; let yearlyPrincipal = 0;
+                    for (let m = 1; m <= 12; m++) {
+                        const i = balance * monthlyRate; const p = monthlyPayment - i;
+                        balance -= p; yearlyInterest += i; yearlyPrincipal += p;
+                    }
+                    html += `<tr><td>${y}</td><td>${formatCurrency(yearStart)}</td><td>${formatCurrency(monthlyPayment*12)}</td><td>${formatCurrency(yearlyPrincipal)}</td><td>${formatCurrency(yearlyInterest)}</td><td>${formatCurrency(balance < 1 ? 0 : balance)}</td></tr>`;
+                }
+                html += `</tbody></table></div>`;
+                document.getElementById('amortizationContent').innerHTML = html;
+            }
+            openModal('amortizationModal');
+        }
+        
+        function showHerdProjection() {
+            let html = `<table class="report-table text-sm w-full"><thead><tr><th>Year</th><th>Adult Cows</th><th>Milking Cows</th><th>Calves Born</th><th>Heifers Sold</th><th>Cows Lost</th></tr></thead><tbody>`;
+            reportData.yearly.forEach(d => {
+                const cowsLost = Math.round(d.herd.total * (reportData.inputs.adultMortalityRate + reportData.inputs.cullingRate));
+                const femaleCalves = Math.round(Math.ceil(d.herd.milkingCows * reportData.inputs.calvingRate * (1 - reportData.inputs.calfMortalityRate)) * 0.5);
+                const heifersSold = Math.max(0, femaleCalves - cowsLost);
+                html += `<tr>
+                    <td>${d.year}</td>
+                    <td>${d.herd.total}</td>
+                    <td>${d.herd.milkingCows}</td>
+                    <td>${Math.round(d.herd.milkingCows * reportData.inputs.calvingRate)}</td>
+                    <td>${heifersSold}</td>
+                    <td>${cowsLost}</td>
+                </tr>`;
+            });
+            html += `</tbody></table><p class="text-xs text-gray-500 mt-2">Note: Adult cow population is kept constant through replacement by heifers.</p>`;
+            document.getElementById('herdProjectionContent').innerHTML = html;
+            openModal('herdProjectionModal');
+        }
+
+        function showSensitivity() {
+            if (!reportData.yearly) return;
+            const year1 = reportData.yearly[0];
+            const baseProfit = year1.netProfit;
+
+            const milkPriceUpProfit = (year1.income.total + (year1.income.milk * 0.1)) - year1.expenses.total;
+            const milkPriceDownProfit = (year1.income.total - (year1.income.milk * 0.1)) - year1.expenses.total;
+            
+            const feedCostUpProfit = year1.income.total - (year1.expenses.total - year1.expenses.feed + (year1.expenses.feed * 1.1));
+            const feedCostDownProfit = year1.income.total - (year1.expenses.total - year1.expenses.feed + (year1.expenses.feed * 0.9));
+
+            const createRow = (variable, direction, value) => {
+                const change = value - baseProfit;
+                const changeClass = change >= 0 ? 'profit' : 'loss';
+                return `<tr><td>${variable}</td><td>${direction}</td><td>${formatCurrency(value)}</td><td class="${changeClass}">${formatCurrency(change)}</td></tr>`;
+            };
+
+            let html = `<table class="report-table w-full text-sm">
+                <thead><tr><th>Variable</th><th>Change</th><th>New Net Profit</th><th>Impact</th></tr></thead>
+                <tbody>
+                    <tr><td colspan="4" class="sub-header">Base Year 1 Profit: ${formatCurrency(baseProfit)}</td></tr>
+                    ${createRow('Milk Price', '+10%', milkPriceUpProfit)}
+                    ${createRow('Milk Price', '-10%', milkPriceDownProfit)}
+                    ${createRow('Feed Cost', '+10%', feedCostUpProfit)}
+                    ${createRow('Feed Cost', '-10%', feedCostDownProfit)}
+                </tbody></table>`;
+            document.getElementById('sensitivityContent').innerHTML = html;
+            openModal('sensitivityModal');
+        }
+
+        function showBreakEvenAnalysis() {
+            if (!reportData.yearly || !reportData.inputs) return;
+
+            const inputs = reportData.inputs;
+            let newHtml = '';
+
+            const year1 = reportData.yearly[0];
+            const totalRevenueY1 = year1.income.total;
+            const totalExpensesY1 = year1.expenses.total;
+            const isProfitableY1 = year1.netProfit > 0;
+
+            const percentageToBreakEven = totalExpensesY1 > 0 ? (totalRevenueY1 / totalExpensesY1) * 100 : (isProfitableY1 ? 100 : 0);
+            const barWidth = Math.min(percentageToBreakEven, 100);
+            const barColor = isProfitableY1 ? 'bg-gradient-to-r from-green-400 to-emerald-500' : 'bg-gradient-to-r from-red-400 to-rose-500';
+            const breakEvenStatusText = isProfitableY1 
+                ? `<p class="text-green-700 font-semibold">Profitable: You are ${formatCurrency(year1.netProfit)} above break-even.</p>` 
+                : `<p class="text-red-700 font-semibold">Loss Making: You are ${formatCurrency(Math.abs(year1.netProfit))} below break-even.</p>`;
+
+            newHtml += `
+                <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                    <h3 class="sub-section-title text-center mb-2">Year 1 Break-Even Status</h3>
+                    <div class="w-full bg-gray-200 rounded-full h-4 mb-2 overflow-hidden">
+                        <div class="${barColor} h-4 rounded-full" style="width: ${barWidth}%"></div>
+                    </div>
+                    <p class="text-center font-bold text-lg">${percentageToBreakEven.toFixed(1)}%</p>
+                    <p class="text-center text-sm text-gray-600">of break-even point reached</p>
+                    <div class="text-center mt-2">${breakEvenStatusText}</div>
+                </div>`;
+
+            const fixedCostsY1 = year1.expenses.labor + year1.expenses.other + year1.expenses.interest + year1.expenses.depreciation;
+            const variableCostsY1 = year1.expenses.feed + year1.expenses.vet;
+            
+            let breakEvenHerdSize = 'N/A';
+            if (year1.herd.total > 0) {
+                const revenuePerCow = totalRevenueY1 / year1.herd.total;
+                const variableCostPerCow = variableCostsY1 / year1.herd.total;
+                const contributionMarginPerCow = revenuePerCow - variableCostPerCow;
+                
+                if (contributionMarginPerCow > 0) {
+                    breakEvenHerdSize = `${Math.ceil(fixedCostsY1 / contributionMarginPerCow)} Cows`;
+                } else {
+                    breakEvenHerdSize = 'Unprofitable Per Cow';
+                }
+            }
+
+            let survivalPeriodHtml = '';
+            if (year1.cashFlow.net < 0) {
+                const initialCashReserve = inputs.ownInvestment;
+                const monthlyCashBurn = Math.abs(year1.cashFlow.net) / 12;
+                let survivalMonths = 'N/A';
+                if (monthlyCashBurn > 0) {
+                     survivalMonths = (initialCashReserve / monthlyCashBurn).toFixed(1) + ' Months';
+                } else {
+                     survivalMonths = 'Infinite (Cash flow neutral)';
+                }
+               
+                survivalPeriodHtml = `
+                    <div class="p-4 bg-red-50 rounded-lg">
+                        <h4 class="font-semibold text-red-800">Survival Period</h4>
+                        <p class="text-2xl font-bold">${survivalMonths}</p>
+                        <p class="text-sm">With cash reserves of ${formatCurrency(initialCashReserve)}.</p>
+                    </div>`;
+            } else {
+                 survivalPeriodHtml = `
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h4 class="font-semibold text-green-800">Survival Period</h4>
+                        <p class="text-2xl font-bold">Positive Cash Flow</p>
+                        <p class="text-sm">Your farm is generating cash in Year 1.</p>
+                    </div>`;
+            }
+
+            newHtml += `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <h4 class="font-semibold text-blue-800">Minimum Herd Size</h4>
+                        <p class="text-2xl font-bold">${breakEvenHerdSize}</p>
+                        <p class="text-sm">To cover all Year 1 costs.</p>
+                    </div>
+                    ${survivalPeriodHtml}
+                </div>`;
+
+            let tableHtml = `<h3 class="sub-section-title border-t pt-4">Yearly Break-Even Milk Price & Yield</h3>
+                             <div class="max-h-80 overflow-y-auto"><table class="report-table w-full text-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Break-Even Milk Price (per L)</th>
+                                        <th>Break-Even Daily Milk Yield (per Cow)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+            reportData.yearly.forEach(yearData => {
+                const nonMilkRevenue = yearData.income.maleCalves + yearData.income.heiferCalves + yearData.income.culledCows + yearData.income.manure;
+                const revenueNeededFromMilk = yearData.expenses.total - nonMilkRevenue;
+                
+                const totalLitersProduced = yearData.herd.milkingCows * 305 * inputs.dailyMilkProduction;
+                let breakEvenMilkPrice = 0;
+                if (totalLitersProduced > 0) {
+                    breakEvenMilkPrice = revenueNeededFromMilk / totalLitersProduced;
+                }
+
+                let breakEvenDailyProduction = 0;
+                if (inputs.milkPrice > 0) {
+                     const totalLitersNeeded = revenueNeededFromMilk / inputs.milkPrice;
+                     if (yearData.herd.milkingCows > 0) {
+                        breakEvenDailyProduction = totalLitersNeeded / (yearData.herd.milkingCows * 305);
+                     }
+                }
+            
+                tableHtml += `<tr>
+                                <td>${yearData.year}</td>
+                                <td>${formatCurrency(breakEvenMilkPrice)}</td>
+                                <td>${breakEvenDailyProduction.toFixed(2)} L</td>
+                              </tr>`;
+            });
+
+            tableHtml += `</tbody></table></div>`;
+            newHtml += tableHtml;
+
+            setHTML('breakEvenContent', newHtml);
+            openModal('breakEvenModal');
+        }
+
+        function showMonthlyCashFlow() {
+            if(!reportData.monthly) return;
+            const gapMonths = reportData.monthly.filter(m => m.netCashFlow < 0);
+            let recommendations = '';
+            if (gapMonths.length > 0) {
+                recommendations = `<div class="p-4 bg-yellow-50 rounded-lg mt-4 text-sm">
+                    <h4 class="font-semibold text-yellow-800">Recommendations</h4>
+                    <p>Your projection shows a cash shortfall in <strong>${gapMonths.length} month(s)</strong> (${gapMonths.map(m=>m.month).join(', ')}).</p>
+                    <ul class="list-disc list-inside mt-2">
+                        <li>Consider securing a short-term credit line or keeping a cash reserve to cover these periods.</li>
+                        <li>Review non-essential spending in the months leading up to the shortfall.</li>
+                        <li>Explore options to pre-sell milk or other products to improve cash inflow.</li>
+                    </ul>
+                </div>`;
+            } else {
+                 recommendations = `<div class="p-4 bg-green-50 rounded-lg mt-4 text-sm">
+                    <h4 class="font-semibold text-green-800">Positive Outlook</h4>
+                    <p>Your Year 1 cash flow projection appears healthy with no monthly shortfalls. Maintain good financial discipline to keep this positive trend.</p>
+                </div>`;
+            }
+
+
+            let tableHtml = `<div class="max-h-96 overflow-y-auto"><table class="report-table w-full text-sm">
+                <thead><tr><th>Month</th><th>Cash In</th><th>Cash Out</th><th>Net Flow</th><th>Ending Balance</th></tr></thead>
+                <tbody>`;
+            
+            reportData.monthly.forEach(m => {
+                const netFlowClass = m.netCashFlow >= 0 ? 'profit' : 'loss';
+                tableHtml += `
+                    <tr class="${m.netCashFlow < 0 ? 'bg-red-50' : ''}">
+                        <td>${m.month}</td>
+                        <td>${formatCurrency(m.cashIn)}</td>
+                        <td>${formatCurrency(m.cashOut)}</td>
+                        <td class="${netFlowClass} font-semibold">${formatCurrency(m.netCashFlow)}</td>
+                        <td class="font-bold">${formatCurrency(m.cumulativeCash)}</td>
+                    </tr>`;
+            });
+            tableHtml += `</tbody></table></div>${recommendations}`;
+
+            setHTML('monthlyCashFlowContent', tableHtml);
+            openModal('monthlyCashFlowModal');
+        }
+
+        function showInvestmentAnalysis() {
+            if (!reportData.inputs) return;
+
+            const investments = [
+                { name: 'Milking Machine', ...reportData.inputs.investments.mm },
+                { name: 'Biogas Plant', ...reportData.inputs.investments.bg },
+                { name: 'Fodder Chopper', ...reportData.inputs.investments.fc }
+            ];
+
+            let tableHtml = `<p class="text-sm text-gray-600 mb-4">Comparative analysis of optional technology investments.</p>
+                             <div class="overflow-x-auto"><table class="report-table w-full text-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Technology</th>
+                                        <th>Cost</th>
+                                        <th>Annual Return</th>
+                                        <th>ROI (%)</th>
+                                        <th>Payback Period (Years)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+            const analysisResults = [];
+
+            investments.forEach(inv => {
+                if (inv.cost > 0) {
+                    const annualReturn = inv.savings + inv.income;
+                    const roi = (annualReturn / inv.cost) * 100;
+                    const payback = annualReturn > 0 ? inv.cost / annualReturn : Infinity;
+                    
+                    analysisResults.push({ name: inv.name, roi, payback });
+
+                    tableHtml += `<tr>
+                                    <td class="font-semibold">${inv.name}</td>
+                                    <td>${formatCurrency(inv.cost)}</td>
+                                    <td>${formatCurrency(annualReturn)}</td>
+                                    <td class="font-bold ${roi >= 0 ? 'profit' : 'loss'}">${roi.toFixed(2)}%</td>
+                                    <td>${payback === Infinity ? 'N/A' : payback.toFixed(2)}</td>
+                                  </tr>`;
+                }
+            });
+
+            tableHtml += `</tbody></table></div>`;
+
+            let recommendationHtml = '<div class="mt-6 p-4 bg-blue-50 rounded-lg">';
+            if (analysisResults.length > 0) {
+                analysisResults.sort((a, b) => b.roi - a.roi); // Sort by ROI descending
+                const bestInvestment = analysisResults[0];
+                
+                recommendationHtml += `<h4 class="font-semibold text-blue-800">Recommendation</h4>`;
+                recommendationHtml += `<p class="text-sm mt-1">Based on the highest Return on Investment (ROI), the <strong>${bestInvestment.name}</strong> appears to be the most financially attractive option, with an ROI of <strong>${bestInvestment.roi.toFixed(2)}%</strong> and a payback period of <strong>${bestInvestment.payback.toFixed(2)} years</strong>.</p>`;
+                
+            } else {
+                recommendationHtml += `<p class="text-sm text-center">Enter costs for investments to see a recommendation.</p>`;
+            }
+            recommendationHtml += '</div>';
+
+            setHTML('investmentAnalysisContent', tableHtml + recommendationHtml);
+            openModal('investmentAnalysisModal');
+        }
+
+        function showAdvancedMetrics() {
+            if (!reportData.advancedMetrics) return;
+            const { irr, dscr, workingCapital, currentRatio, yearlyNpvs } = reportData.advancedMetrics;
+
+            let dscrTable = `<h3 class="sub-section-title">Debt Service Coverage Ratio (DSCR)</h3>
+                             <p class="text-sm text-gray-600 mb-2">Measures ability to pay debt. Lenders typically look for a ratio of 1.25 or higher.</p>
+                             <table class="report-table w-full text-sm"><thead><tr><th>Year</th><th>DSCR</th></tr></thead><tbody>`;
+            dscr.forEach((val, i) => {
+                const dscrClass = val >= 1.25 ? 'profit' : (val < 1 ? 'loss' : '');
+                dscrTable += `<tr><td>Year ${i+1}</td><td class="font-bold ${dscrClass}">${val === Infinity ? 'N/A (No Debt)' : val.toFixed(2)}</td></tr>`;
+            });
+            dscrTable += '</tbody></table>';
+
+            let npvTable = `<h3 class="sub-section-title mt-6">Cumulative Net Present Value (NPV) by Year</h3>
+                             <p class="text-sm text-gray-600 mb-2">Shows the discounted value of the project at the end of each year.</p>
+                             <table class="report-table w-full text-sm"><thead><tr><th>Year</th><th>Cumulative NPV</th></tr></thead><tbody>`;
+            yearlyNpvs.forEach((val, i) => {
+                const npvClass = val >= 0 ? 'profit' : 'loss';
+                npvTable += `<tr><td>Year ${i + 1}</td><td class="font-bold ${npvClass}">${formatCurrency(val)}</td></tr>`;
+            });
+            npvTable += '</tbody></table>';
+
+
+            const html = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <p class="text-sm text-gray-600">Internal Rate of Return (IRR)</p>
+                        <p class="text-2xl font-bold">${(irr * 100).toFixed(2)}%</p>
+                    </div>
+                     <div class="p-4 bg-green-50 rounded-lg">
+                        <p class="text-sm text-gray-600">Current Ratio (Year 1)</p>
+                        <p class="text-2xl font-bold">${currentRatio === Infinity ? 'N/A' : currentRatio.toFixed(2)}</p>
+                    </div>
+                </div>
+                 <div class="p-4 bg-indigo-50 rounded-lg text-center mt-4">
+                    <p class="text-sm text-gray-600">Estimated Working Capital Req. (Year 1)</p>
+                    <p class="text-2xl font-bold">${formatCurrency(workingCapital)}</p>
+                    <p class="text-xs">(Based on 2 months of operating expenses)</p>
+                </div>
+                <div class="mt-6">${dscrTable}</div>
+                <div class="mt-6">${npvTable}</div>
+            `;
+
+            setHTML('advancedMetricsContent', html);
+            openModal('advancedMetricsModal');
+        }
+
+        function showOperationalEfficiency() {
+            if (!reportData.yearly || !reportData.inputs) return;
+
+            const year1 = reportData.yearly[0];
+            const inputs = reportData.inputs;
+            const laborers = Math.ceil(year1.herd.total / 10);
+
+            // Labor Productivity
+            const cowsPerLaborer = laborers > 0 ? (year1.herd.total / laborers).toFixed(1) : 'N/A';
+            const milkPerLaborer = laborers > 0 ? (year1.income.milk / inputs.milkPrice / laborers).toFixed(0) : 'N/A';
+            
+            // Energy & Water Costs
+            const annualEnergyCost = year1.expenses.energy;
+            const annualWaterCost = year1.expenses.water;
+            
+            // Feed Cost Efficiency
+            const feedEfficiency = [];
+            const { concentratePrice, greenRoughagePrice, dryRoughagePrice, efficiency } = inputs;
+
+            if (efficiency.concentrateCP > 0) {
+                feedEfficiency.push({ name: 'Concentrate', costPerKgCP: concentratePrice / (efficiency.concentrateCP / 100) });
+            }
+            if (efficiency.greenRoughageCP > 0) {
+                 feedEfficiency.push({ name: 'Green Roughage', costPerKgCP: greenRoughagePrice / (efficiency.greenRoughageCP / 100) });
+            }
+            if (efficiency.dryRoughageCP > 0) {
+                feedEfficiency.push({ name: 'Dry Roughage', costPerKgCP: dryRoughagePrice / (efficiency.dryRoughageCP / 100) });
+            }
+
+            let feedTable = `<h3 class="sub-section-title">Feed Cost Efficiency (Least-Cost Ration)</h3>
+                           <p class="text-sm text-gray-600 mb-2">Compares the cost to acquire 1kg of Crude Protein (CP) from each feed source.</p>
+                           <table class="report-table w-full text-sm"><thead><tr><th>Feed Source</th><th>Cost per Kg of Crude Protein</th></tr></thead><tbody>`;
+            feedEfficiency.forEach(feed => {
+                feedTable += `<tr><td class="font-semibold">${feed.name}</td><td>${formatCurrency(feed.costPerKgCP)}</td></tr>`;
+            });
+            feedTable += '</tbody></table>';
+
+            let feedRecommendation = '';
+            if (feedEfficiency.length > 0) {
+                feedEfficiency.sort((a,b) => a.costPerKgCP - b.costPerKgCP);
+                const cheapest = feedEfficiency[0];
+                feedRecommendation = `<div class="mt-4 p-4 bg-green-50 rounded-lg text-sm">
+                    <h4 class="font-semibold text-green-800">Recommendation</h4>
+                    <p><strong>${cheapest.name}</strong> is your most cost-effective source of protein at <strong>${formatCurrency(cheapest.costPerKgCP)} per kg of CP</strong>. Consider maximizing its use in your rations where nutritionally appropriate to lower costs.</p>
+                </div>`;
+            }
+
+            const html = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h4 class="font-semibold">Labor Productivity</h4>
+                        <p>Cows per Laborer: <span class="font-bold text-lg">${cowsPerLaborer}</span></p>
+                        <p>Annual Milk per Laborer: <span class="font-bold text-lg">${milkPerLaborer} L</span></p>
+                    </div>
+                     <div class="p-4 bg-gray-50 rounded-lg">
+                        <h4 class="font-semibold">Utility Costs</h4>
+                        <p>Annual Energy Cost: <span class="font-bold text-lg">${formatCurrency(annualEnergyCost)}</span></p>
+                        <p>Annual Water Cost: <span class="font-bold text-lg">${formatCurrency(annualWaterCost)}</span></p>
+                    </div>
+                </div>
+                <div>${feedTable}</div>
+                <div>${feedRecommendation}</div>
+            `;
+             setHTML('operationalEfficiencyContent', html);
+            openModal('operationalEfficiencyModal');
+
+        }
+
+        function showVisualization() {
+            if (!reportData.yearly) return;
+            const ctx = document.getElementById('financialChart').getContext('2d');
+            if (financialChartInstance) financialChartInstance.destroy();
+            financialChartInstance = new Chart(ctx, { type: 'bar',
+                data: { labels: reportData.yearly.map(d => `Year ${d.year}`),
+                    datasets: [
+                        { label: 'Total Income', data: reportData.yearly.map(d => d.income.total), backgroundColor: 'rgba(54, 162, 235, 0.7)' },
+                        { label: 'Total Expenses', data: reportData.yearly.map(d => d.expenses.total), backgroundColor: 'rgba(255, 99, 132, 0.7)' },
+                        { label: 'Net Profit', data: reportData.yearly.map(d => d.netProfit), type: 'line', tension: 0.3, fill: false, borderColor: 'rgba(75, 192, 192, 1)' }
+                    ]
+                }, options: { responsive: true, scales: { y: { beginAtZero: false } } }
+            });
+            openModal('chartModal');
+        }
+
+        
+        function generatePDF() {
+            if (!reportData.inputs) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'pt'); // Using points for better control
+            const { inputs, capital, yearly, npv, advancedMetrics, monthly } = reportData;
+            
+            const developerName = "Developed By: MD AKRAMUL HAQUE, BCS (Livestock), DLS, Bangladesh";
+            const generatedDate = "Generated on: " + new Date().toLocaleDateString('en-GB');
+
+            let finalY = 0;
+            const pageHeaderMargin = 40;
+            const contentMargin = 40;
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            const addHeaderFooter = () => {
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    // Header
+                    doc.text(developerName, pageWidth / 2, 20, { align: 'center' });
+                    // Footer
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    doc.text(generatedDate, contentMargin, pageHeight - 20);
+                    doc.text(`Page ${i} of ${pageCount}`, pageWidth - contentMargin, pageHeight - 20, { align: 'right' });
+                }
+            };
+
+            const addPageHeader = (title) => {
+                 if (finalY > 0 && finalY + 60 > doc.internal.pageSize.getHeight()) { // Check if space for header + content
+                    doc.addPage();
+                    finalY = pageHeaderMargin;
+                } else if (finalY === 0) {
+                    finalY = pageHeaderMargin;
+                }
+                doc.setFontSize(14);
+                doc.setTextColor(40);
+                doc.text(title, contentMargin, finalY);
+                finalY += 20; // space after header
+            }
+            
+            // --- Page 1: Title & Executive Summary ---
+            doc.setFontSize(22); doc.setTextColor(20); doc.text("Comprehensive Dairy Farm Financial Report", pageWidth / 2, 60, { align: "center" });
+            doc.setFontSize(14); doc.setTextColor(100); doc.text(`Scenario: ${activeScenario.charAt(0).toUpperCase() + activeScenario.slice(1)}`, pageWidth / 2, 80, { align: "center" });
+            
+            let paybackPeriod = "N/A";
+            let cumulativeCashFlow = -capital.total;
+            for(const yearData of yearly) {
+                cumulativeCashFlow += yearData.cashFlow.net;
+                if(cumulativeCashFlow > 0) {
+                    const yearBefore = yearData.year - 1;
+                    const cashFlowBefore = cumulativeCashFlow - yearData.cashFlow.net;
+                    if(yearData.cashFlow.net > 0){
+                       paybackPeriod = (yearBefore + (Math.abs(cashFlowBefore) / yearData.cashFlow.net)).toFixed(2) + " Years";
+                    }
+                    break;
+                }
+            }
+
+
+            doc.autoTable({
+                startY: 110,
+                head: [['Executive Summary Metric', 'Value']],
+                body: [
+                    ['Initial Investment', formatCurrency(capital.total)],
+                    ['Net Present Value (NPV)', formatCurrency(npv)],
+                    ['Internal Rate of Return (IRR)', `${(advancedMetrics.irr * 100).toFixed(2)}%`],
+                    ['Simple Payback Period', paybackPeriod],
+                    ['5-Year Average Net Profit', formatCurrency(yearly.reduce((s, y) => s + y.netProfit, 0) / 5)],
+                    ['Year 1 DSCR', advancedMetrics.dscr[0] === Infinity ? 'N/A' : advancedMetrics.dscr[0].toFixed(2)]
+                ],
+                theme: 'grid',
+                margin: { left: contentMargin, right: contentMargin }
+            });
+            finalY = doc.autoTable.previous.finalY;
+
+            addPageHeader("5-Year Financial Summary");
+            doc.autoTable({ startY: finalY, head: [['Year', 'Income', 'Expenditure', 'Net Profit', 'Net Cash Flow']], body: yearly.map(y => [y.year, formatCurrency(y.income.total), formatCurrency(y.expenses.total), formatCurrency(y.netProfit), formatCurrency(y.cashFlow.net)]), margin: { left: contentMargin, right: contentMargin }});
+            finalY = doc.autoTable.previous.finalY;
+
+            // --- Page 2: Input Parameters ---
+            doc.addPage();
+            finalY = 0;
+            addPageHeader("Project Input Parameters");
+
+            doc.autoTable({
+                startY: finalY,
+                head: [['Farm & Herd Structure', '']],
+                body: [['Initial Cow Population', `${inputs.totalCattle} Cows`]],
+                theme: 'grid', margin: { left: contentMargin, right: contentMargin }
+            });
+            finalY = doc.autoTable.previous.finalY;
+
+            doc.autoTable({
+                startY: finalY + 10,
+                head: [['Herd Dynamics', '']],
+                body: [
+                    ['Calving Rate', `${(inputs.calvingRate * 100).toFixed(0)}%`],
+                    ['Calf Mortality Rate', `${(inputs.calfMortalityRate * 100).toFixed(0)}%`],
+                    ['Adult Mortality Rate', `${(inputs.adultMortalityRate * 100).toFixed(0)}%`],
+                    ['Culling Rate', `${(inputs.cullingRate * 100).toFixed(0)}%`],
+                ],
+                theme: 'grid', margin: { left: contentMargin, right: contentMargin }
+            });
+            finalY = doc.autoTable.previous.finalY;
+
+            doc.autoTable({
+                startY: finalY + 10,
+                head: [['Capital Expenditure', 'Value (BDT)']],
+                body: [
+                    ['Farmstead Land', formatCurrency(inputs.farmsteadLandPrice * (inputs.totalCattle/20))],
+                    ['Fodder Land', formatCurrency(inputs.fodderLandPrice * (inputs.totalCattle*8/20))],
+                    ['Office Building', formatCurrency(inputs.officeCost)],
+                    ['Milking Cow Shed', formatCurrency(inputs.milkingShedCost)],
+                    ['Dry Cow Shed', formatCurrency(inputs.dryCowShedCost)],
+                    ['Calf Shed', formatCurrency(inputs.calfShedCost)],
+                    ['Livestock Purchase', formatCurrency(inputs.cowPrice * inputs.totalCattle)],
+                    ['Equipment & Machinery', formatCurrency(inputs.equipmentPrice)],
+                ],
+                theme: 'grid', margin: { left: contentMargin, right: contentMargin }
+            });
+             finalY = doc.autoTable.previous.finalY;
+
+            if (finalY + 200 > doc.internal.pageSize.getHeight()){ doc.addPage(); finalY = 0; addPageHeader("Operations, Income & Funding Parameters");}
+
+            doc.autoTable({
+                startY: finalY + 10,
+                head: [['Operations & Recurring Costs', 'Value']],
+                body: [
+                    ['Laborer Salary (per year)', formatCurrency(inputs.laborSalary)],
+                    ['Vet & Medicine (per cow/year)', formatCurrency(inputs.vetCost)],
+                    ['Other Annual Costs', formatCurrency(inputs.otherCosts)],
+                    ['Concentrate Price (per Kg)', formatCurrency(inputs.concentratePrice)],
+                    ['Green Roughage Price (per Kg)', formatCurrency(inputs.greenRoughagePrice)],
+                    ['Dry Roughage Price (per Kg)', formatCurrency(inputs.dryRoughagePrice)],
+                ],
+                theme: 'grid', margin: { left: contentMargin, right: contentMargin }
+            });
+            finalY = doc.autoTable.previous.finalY;
+
+            doc.autoTable({
+                startY: finalY + 10,
+                head: [['Income Sources', 'Value']],
+                body: [
+                    ['Avg. Daily Milk / Cow', `${inputs.dailyMilkProduction} L`],
+                    ['Milk Price (per L)', formatCurrency(inputs.milkPrice)],
+                    ['Culled Cow Sale Price', formatCurrency(inputs.culledCowPrice)],
+                    ['Male Calf Sale Price', formatCurrency(inputs.maleCalfPrice)],
+                    ['Heifer Calf Sale Price', formatCurrency(inputs.heiferCalfPrice)],
+                    ['Annual Manure & Other Income', formatCurrency(inputs.manureIncome)],
+                ],
+                theme: 'grid', margin: { left: contentMargin, right: contentMargin }
+            });
+            finalY = doc.autoTable.previous.finalY;
+
+            doc.autoTable({
+                startY: finalY + 10,
+                head: [['Funding & Financials', 'Value']],
+                body: [
+                    ['Own Investment', formatCurrency(inputs.ownInvestment)],
+                    ['Bank Loan', formatCurrency(inputs.bankLoan)],
+                    ['Interest Rate', `${(inputs.interestRate * 100).toFixed(0)}%`],
+                    ['Loan Term', `${inputs.loanTerm} Years`],
+                    ['Depreciation Rate', `${(inputs.depreciationRate * 100).toFixed(0)}%`],
+                ],
+                theme: 'grid', margin: { left: contentMargin, right: contentMargin }
+            });
+            finalY = doc.autoTable.previous.finalY;
+
+
+            // --- Detailed Yearly Breakdowns ---
+            yearly.forEach(yearData => {
+                doc.addPage();
+                finalY = 0;
+                addPageHeader(`Detailed Financials for Year ${yearData.year}`);
+                 doc.autoTable({
+                    startY: finalY,
+                    theme: 'grid',
+                    body: [
+                        { content: 'Income', styles: { fontStyle: 'bold', fillColor: '#F3F4F6' } },
+                        ['Milk Sales', { content: formatCurrency(yearData.income.milk), styles: { halign: 'right' } }],
+                        ['Male Calf Sales', { content: formatCurrency(yearData.income.maleCalves), styles: { halign: 'right' } }],
+                        ['Heifer Calf Sales', { content: formatCurrency(yearData.income.heiferCalves), styles: { halign: 'right' } }],
+                        ['Culled Cow Sales', { content: formatCurrency(yearData.income.culledCows), styles: { halign: 'right' } }],
+                        ['Manure & Other', { content: formatCurrency(yearData.income.manure), styles: { halign: 'right' } }],
+                        [{ content: 'Total Income', styles: { fontStyle: 'bold' } }, { content: formatCurrency(yearData.income.total), styles: { fontStyle: 'bold', halign: 'right' } }],
+                        
+                        { content: 'Expenses', styles: { fontStyle: 'bold', fillColor: '#F3F4F6' } },
+                        ['Feed', { content: formatCurrency(yearData.expenses.feed), styles: { halign: 'right' } }],
+                        ['Labor', { content: formatCurrency(yearData.expenses.labor), styles: { halign: 'right' } }],
+                        ['Vet & Medicine', { content: formatCurrency(yearData.expenses.vet), styles: { halign: 'right' } }],
+                        ['Other Costs', { content: formatCurrency(yearData.expenses.other), styles: { halign: 'right' } }],
+                        ['Interest', { content: formatCurrency(yearData.expenses.interest), styles: { halign: 'right' } }],
+                        ['Depreciation', { content: formatCurrency(yearData.expenses.depreciation), styles: { halign: 'right' } }],
+                        [{ content: 'Total Expenses', styles: { fontStyle: 'bold' } }, { content: formatCurrency(yearData.expenses.total), styles: { fontStyle: 'bold', halign: 'right' } }],
+                        
+                        [{ content: 'Net Profit', styles: { fontStyle: 'bold', fontSize: 12 } }, { content: formatCurrency(yearData.netProfit), styles: { fontStyle: 'bold', fontSize: 12, halign: 'right' } }],
+                    ],
+                    columnStyles: { 0: { fontStyle: 'bold' } },
+                    margin: { left: contentMargin, right: contentMargin }
+                });
+                finalY = doc.autoTable.previous.finalY;
+            });
+            
+            // --- Other Analyses ---
+            doc.addPage();
+            finalY = 0;
+            
+            // Investment Analysis
+            addPageHeader("Investment Analysis");
+            const investments = [
+                { name: 'Milking Machine', ...reportData.inputs.investments.mm },
+                { name: 'Biogas Plant', ...reportData.inputs.investments.bg },
+                { name: 'Fodder Chopper', ...reportData.inputs.investments.fc }
+            ];
+            const investmentBody = [];
+            investments.forEach(inv => {
+                if (inv.cost > 0) {
+                    const annualReturn = inv.savings + inv.income;
+                    const roi = (annualReturn / inv.cost) * 100;
+                    const payback = annualReturn > 0 ? inv.cost / annualReturn : Infinity;
+                    investmentBody.push([inv.name, formatCurrency(inv.cost), formatCurrency(annualReturn), `${roi.toFixed(2)}%`, payback === Infinity ? 'N/A' : payback.toFixed(2)]);
+                }
+            });
+            if(investmentBody.length > 0){
+                 doc.autoTable({ startY: finalY, head: [['Technology', 'Cost', 'Annual Return', 'ROI (%)', 'Payback (Years)']], body: investmentBody, margin: { left: contentMargin, right: contentMargin } });
+                 finalY = doc.autoTable.previous.finalY;
+            } else {
+                doc.text("No optional investments were entered.", contentMargin, finalY);
+                finalY += 10;
+            }
+
+
+            // Sensitivity Analysis
+            addPageHeader("Sensitivity Analysis (Year 1)");
+            const year1 = yearly[0];
+            const baseProfit = year1.netProfit;
+            const milkPriceUpProfit = (year1.income.total + (year1.income.milk * 0.1)) - year1.expenses.total;
+            const milkPriceDownProfit = (year1.income.total - (year1.income.milk * 0.1)) - year1.expenses.total;
+            const feedCostUpProfit = year1.income.total - (year1.expenses.total - year1.expenses.feed + (year1.expenses.feed * 1.1));
+            const feedCostDownProfit = year1.income.total - (year1.expenses.total - year1.expenses.feed + (year1.expenses.feed * 0.9));
+            doc.autoTable({ startY: finalY, head: [['Variable', 'Change', 'New Net Profit', 'Impact']], body: [
+                ['Milk Price', '+10%', formatCurrency(milkPriceUpProfit), formatCurrency(milkPriceUpProfit - baseProfit)],
+                ['Milk Price', '-10%', formatCurrency(milkPriceDownProfit), formatCurrency(milkPriceDownProfit - baseProfit)],
+                ['Feed Cost', '+10%', formatCurrency(feedCostUpProfit), formatCurrency(feedCostUpProfit - baseProfit)],
+                ['Feed Cost', '-10%', formatCurrency(feedCostDownProfit), formatCurrency(feedCostDownProfit - baseProfit)]
+            ], margin: { left: contentMargin, right: contentMargin }});
+            finalY = doc.autoTable.previous.finalY;
+
+            doc.addPage();
+            finalY = 0;
+
+            addPageHeader("Advanced Financial Metrics");
+            doc.autoTable({ startY: finalY, head: [['Metric', 'Value']], body: [
+                ['Internal Rate of Return (IRR)', `${(advancedMetrics.irr * 100).toFixed(2)}%`],
+                ['Year 1 Current Ratio', advancedMetrics.currentRatio === Infinity ? 'N/A' : advancedMetrics.currentRatio.toFixed(2)],
+                ['Year 1 Working Capital Req.', formatCurrency(advancedMetrics.workingCapital)]
+            ], margin: { left: contentMargin, right: contentMargin }});
+            finalY = doc.autoTable.previous.finalY;
+            doc.autoTable({ startY: finalY + 10, head: [['Year', 'DSCR']], body: advancedMetrics.dscr.map((val, i) => [`Year ${i+1}`, val === Infinity ? 'N/A (No Debt)' : val.toFixed(2)]), margin: { left: contentMargin, right: contentMargin } });
+            finalY = doc.autoTable.previous.finalY;
+            doc.autoTable({ startY: finalY + 10, head: [['Year', 'Cumulative NPV']], body: advancedMetrics.yearlyNpvs.map((val, i) => [`Year ${i+1}`, formatCurrency(val)]), margin: { left: contentMargin, right: contentMargin } });
+            
+            doc.addPage();
+            finalY = 0;
+
+            addPageHeader("5-Year Herd Projection");
+            doc.autoTable({ startY: finalY, head: [['Year', 'Start Cows', 'Milking Cows', 'Calves Born', 'Heifers Added', 'Cows Lost', 'End Cows']], body: yearly.map((d,i) => {
+                const startCows = (d.year === 1) ? inputs.totalCattle : yearly[i-1].herd.nextTotal;
+                const cowsLost = startCows - d.herd.nextTotal + d.herd.heifers_yr2;
+                return [d.year, Math.round(startCows), d.herd.milkingCows, Math.round(d.herd.milkingCows * inputs.calvingRate), Math.round(d.herd.heifers_yr2), Math.round(cowsLost), Math.round(d.herd.nextTotal)];
+            }), margin: { left: contentMargin, right: contentMargin }});
+            finalY = doc.autoTable.previous.finalY;
+            
+            addPageHeader("Year 1 Monthly Cash Flow Projection");
+            doc.autoTable({ startY: finalY, head: [['Month', 'Cash In', 'Cash Out', 'Net Flow', 'Ending Balance']], body: monthly.map(m => [m.month, formatCurrency(m.cashIn), formatCurrency(m.cashOut), formatCurrency(m.netCashFlow), formatCurrency(m.cumulativeCash)]), margin: { left: contentMargin, right: contentMargin }});
+            finalY = doc.autoTable.previous.finalY;
+            
+            // Loan Amortization
+            if (inputs.bankLoan > 0 && inputs.loanTerm > 0) {
+                 doc.addPage();
+                 finalY = 0;
+                 addPageHeader("Loan Amortization Schedule");
+                 let balance = inputs.bankLoan;
+                 const monthlyRate = inputs.interestRate / 12;
+                 const monthlyPayment = monthlyRate > 0 ? (inputs.bankLoan * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -inputs.loanTerm * 12)) : inputs.bankLoan / (inputs.loanTerm * 12);
+                 const amortizationBody = [];
+                 for (let y = 1; y <= inputs.loanTerm; y++) {
+                    let yearStart = balance; let yearlyInterest = 0; let yearlyPrincipal = 0;
+                    for (let m = 1; m <= 12; m++) {
+                        const i = balance * monthlyRate; const p = monthlyPayment - i;
+                        balance -= p; yearlyInterest += i; yearlyPrincipal += p;
+                    }
+                    amortizationBody.push([y, formatCurrency(yearStart), formatCurrency(monthlyPayment*12), formatCurrency(yearlyPrincipal), formatCurrency(yearlyInterest), formatCurrency(balance < 1 ? 0 : balance)]);
+                }
+                doc.autoTable({ startY: finalY, head: [['Year', 'Beginning Balance', 'Total Payments', 'Principal Paid', 'Interest Paid', 'Ending Balance']], body: amortizationBody, margin: { left: contentMargin, right: contentMargin } });
+            }
+
+            addHeaderFooter();
+            doc.save('Comprehensive_Dairy_Farm_Report.pdf');
+        }
+        
+        // --- EVENT LISTENERS ---
+        const debouncedCalc = debounce(calculate, 400);
+        document.querySelectorAll('input, select').forEach(input => input.addEventListener('input', debouncedCalc));
+        
+        document.getElementById('scenario-controls').addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active'); activeScenario = e.target.dataset.scenario; calculate();
+            }
+        });
+        
+        document.getElementById('kpiBtn').addEventListener('click', showKPIs);
+        document.getElementById('monthlyCashFlowBtn').addEventListener('click', showMonthlyCashFlow);
+        document.getElementById('investmentAnalysisBtn').addEventListener('click', showInvestmentAnalysis);
+        document.getElementById('advancedMetricsBtn').addEventListener('click', showAdvancedMetrics);
+        document.getElementById('operationalEfficiencyBtn').addEventListener('click', showOperationalEfficiency);
+        document.getElementById('amortizationBtn').addEventListener('click', showAmortization);
+        document.getElementById('herdProjectionBtn').addEventListener('click', showHerdProjection);
+        document.getElementById('visualizeBtn').addEventListener('click', showVisualization);
+        document.getElementById('downloadPdfBtn').addEventListener('click', generatePDF);
+        document.getElementById('printBtn').addEventListener('click', () => window.print());
+        document.getElementById('sensitivityBtn')?.addEventListener('click', showSensitivity);
+        document.getElementById('breakEvenBtn')?.addEventListener('click', showBreakEvenAnalysis);
+        document.getElementById('guidelineBtn')?.addEventListener('click', () => {
+            setVal('guidelineCows', getInt('totalCattle'));
+            updateGuidelineRecommendations();
+            openModal('guidelineModal');
+        });
+        
+        window.onclick = (event) => { if (event.target.classList.contains('modal')) event.target.style.display = "none"; }
+        
+        // --- GUIDELINE LOGIC ---
+        function updateGuidelineRecommendations(){
+            const cows = getInt('guidelineCows');
+            if(cows <= 0) return;
+
+            setHTML('guide_farmstead_land_rec', (cows / 20).toFixed(2));
+            setHTML('guide_fodder_land_rec', (cows * 8 / 20).toFixed(2));
+
+            const milking = Math.round(cows * 0.6);
+            const dry = cows - milking;
+            const calves = Math.ceil(milking * (getInt('calvingRate')/100) * (1 - (getInt('calfMortalityRate')/100)));
+            
+            setHTML('guide_milking_shed_rec', (milking * 3).toFixed(1));
+            setHTML('guide_dry_cow_shed_rec', (dry * 3).toFixed(1));
+            setHTML('guide_calf_shed_rec', (calves * 1.5).toFixed(1));
+            setHTML('guide_labor_rec', Math.ceil(cows / 10));
+        }
+
+        function applyGuidelineToForm() {
+            const cows = getInt('guidelineCows');
+            if(cows <= 0) return;
+
+            setVal('totalCattle', cows);
+            
+            // Set some sensible defaults based on farm size
+            const isSmall = cows <= 10;
+            const isLarge = cows >= 50;
+
+            setVal('cowPrice', isSmall ? 120000 : (isLarge ? 180000 : 150000));
+            setVal('officeCost', isSmall ? 150000 : (isLarge ? 500000 : 300000));
+            setVal('milkingShedCost', cows * 0.6 * 3 * (isSmall ? 1500 : 2000));
+            setVal('dryCowShedCost', cows * 0.4 * 3 * (isSmall ? 1500 : 2000));
+            const calves = Math.ceil(cows * 0.6 * (getInt('calvingRate')/100) * (1-(getInt('calfMortalityRate')/100)));
+            setVal('calfShedCost', calves * 1.5 * 1500);
+            
+            setVal('equipmentPrice', isSmall ? 150000 : (isLarge ? 1500000 : 500000));
+            setVal('laborSalary', isSmall ? 96000 : (isLarge ? 144000 : 120000));
+            setVal('otherCosts', isSmall ? 25000 : (isLarge ? 250000 : 100000));
+            setVal('dailyMilkProduction', isSmall ? 8 : (isLarge ? 12 : 10));
+            setVal('milkPrice', isSmall ? 55 : (isLarge ? 65 : 60));
+
+            // Set efficiency defaults
+            setVal('energyUsagePerCow', 0.5);
+            setVal('waterUsagePerCow', 100);
+            setVal('concentrateCP', 20);
+            setVal('greenRoughageCP', 10);
+            setVal('dryRoughageCP', 4);
+
+
+            // Close modal and recalculate everything
+            closeModal('guidelineModal');
+            calculate();
+        }
+
+        window.onload = calculate;
+    </script>
+</body>
+</html>
+
