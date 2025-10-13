@@ -42,11 +42,16 @@
             .modal { position: relative; overflow: visible; display: block !important; opacity: 1 !important; pointer-events: auto !important; }
             .modal-container { box-shadow: none; border: 1px solid #ccc; max-width: 100% !important; }
         }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-tr from-sky-100 via-indigo-200 to-purple-300 min-h-screen p-4 md:p-8">
 
-    <main class="w-full max-w-6xl mx-auto hub-main">
+    <main class="w-full max-w-7xl mx-auto hub-main">
 
         <!-- Developer Credit Board -->
         <div class="mb-8">
@@ -62,147 +67,149 @@
         </div>
 
         <!-- Grid container for the links -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="space-y-12">
+            <!-- Section 1: Planning & Financials -->
+            <div>
+                <h2 class="text-2xl font-bold text-slate-700 mb-4 border-b-2 border-slate-300 pb-2">Planning & Financials</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <a href="https://akramulrony89-ops.github.io/dairyfinancialplanning/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
+                        <div class="flex flex-col items-center text-center">
+                           <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-cyan-100 to-cyan-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                               <svg class="w-16 h-16 text-cyan-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V5.25A2.25 2.25 0 0018 3H6A2.25 2.25 0 003.75 5.25v12.75A2.25 2.25 0 006 20.25z" />
+                               </svg>
+                           </div>
+                           <h2 class="text-2xl font-bold text-gray-900 mb-2">Dairy Financial Planner</h2>
+                           <p class="text-gray-600 mb-6">Project profitability and analyze investments for your dairy farm.</p>
+                           <span class="inline-block bg-gradient-to-br from-cyan-500 to-cyan-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-cyan-600 group-hover:to-cyan-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-cyan-500/40">Open Planner &rarr;</span>
+                        </div>
+                    </a>
+                    <a href="https://akramulrony89-ops.github.io/beef-fattening-/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
+                        <div class="flex flex-col items-center text-center">
+                             <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                                <svg class="w-16 h-16 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-3.976 5.198M21 3l-2.25 6.375" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Beef Fattening Planner</h2>
+                            <p class="text-gray-600 mb-6">Plan and manage your beef fattening operations for maximum growth.</p>
+                            <span class="inline-block bg-gradient-to-br from-orange-500 to-orange-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-orange-600 group-hover:to-orange-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-orange-500/40">Open Planner &rarr;</span>
+                        </div>
+                    </a>
+                    <a href="https://akramulrony89-ops.github.io/ration/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-green-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
+                        <div class="flex flex-col items-center text-center">
+                             <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                                <svg class="w-16 h-16 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Ration Calculator</h2>
+                            <p class="text-gray-600 mb-6">Online tool for calculating nutritionally balanced cattle feed rations.</p>
+                            <span class="inline-block bg-gradient-to-br from-green-500 to-green-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-green-600 group-hover:to-green-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-green-500/40">Use Calculator &rarr;</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
-            <!-- Row 1: Planning Tools -->
-            <a href="https://akramulrony89-ops.github.io/dairyplanning/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
-                 <div class="flex flex-col items-center text-center">
-                    <div class="mb-6 h-32 w-32 flex-shrink-0 rounded-full bg-gradient-to-br from-cyan-100 to-cyan-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
-                        <svg class="w-16 h-16 text-cyan-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V5.25A2.25 2.25 0 0018 3H6A2.25 2.25 0 003.75 5.25v12.75A2.25 2.25 0 006 20.25z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Dairy Financial Planner</h2>
-                        <p class="text-gray-600 mb-6">Advanced tool for projecting profitability and analyzing investments in a dairy farm.</p>
-                        <span class="inline-block bg-gradient-to-br from-cyan-500 to-cyan-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-cyan-600 group-hover:to-cyan-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-cyan-500/40">
-                            Open Planner &rarr;
-                        </span>
-                    </div>
+            <!-- Section 2: Farm Management Guides -->
+            <div>
+                 <h2 class="text-2xl font-bold text-slate-700 mb-4 border-b-2 border-slate-300 pb-2">Farm Management Guides</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                     <button id="fodder-modal-open" class="lg:col-span-3 group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50 text-left">
+                        <div class="flex flex-col md:flex-row items-center text-center md:text-left md:space-x-8">
+                            <div class="mb-6 md:mb-0 h-32 w-32 flex-shrink-0 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                                <svg class="w-16 h-16 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                   <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694 4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900 mb-2">Annual Feeds & Fodder Calculator</h2>
+                                <p class="text-gray-600 mb-6">Dynamically calculate total feed, fodder, and land requirements for Dairy, Beef, or Fattening operations. Click to start planning.</p>
+                                <span class="inline-block bg-gradient-to-br from-purple-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-purple-600 group-hover:to-purple-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-purple-500/40">Open Calculator &rarr;</span>
+                            </div>
+                        </div>
+                    </button>
+                    <button id="housing-modal-open" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50 text-left">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                                <svg class="w-16 h-16 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5-1.5-.5M5.25 7.136L3 8.25m8.25 3l-2.25 2.25m0 0l-2.25 2.25M10.5 13.5l2.25-2.25m2.25 2.25l2.25-2.25M15 11.25l-2.25 2.25" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Dairy Housing Guide</h2>
+                            <p class="text-gray-600 mb-6">Visual guide with measurements for optimal cattle housing.</p>
+                            <span class="inline-block bg-gradient-to-br from-amber-500 to-amber-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-amber-600 group-hover:to-amber-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-amber-500/40">View Guide &rarr;</span>
+                        </div>
+                    </button>
+                    <button id="selection-modal-open" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50 text-left">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                                <svg class="w-16 h-16 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Modern Breed Selection</h2>
+                            <p class="text-gray-600 mb-6">Explore data-driven criteria for dairy and beef cattle selection.</p>
+                            <span class="inline-block bg-gradient-to-br from-indigo-500 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-indigo-600 group-hover:to-indigo-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-indigo-500/40">Learn More &rarr;</span>
+                        </div>
+                    </button>
+                     <button id="feeding-tech-modal-open" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-slate-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50 text-left">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                                <svg class="w-16 h-16 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.375a9.375 9.375 0 100-18.75 9.375 9.375 0 000 18.75zm0-8.625a1.125 1.125 0 110-2.25 1.125 1.125 0 010 2.25zM12 12.75a.75.75 0 00.75-.75v-1.5a.75.75 0 00-1.5 0v1.5a.75.75 0 00.75.75z" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Modern Feeding Tech</h2>
+                            <p class="text-gray-600 mb-6">Learn about advanced feeding strategies to boost efficiency.</p>
+                            <span class="inline-block bg-gradient-to-br from-slate-500 to-slate-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-slate-600 group-hover:to-slate-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-slate-500/40">Explore Tech &rarr;</span>
+                        </div>
+                    </button>
+                 </div>
+            </div>
+
+            <!-- Section 3: Health & Disease -->
+            <div>
+                 <h2 class="text-2xl font-bold text-slate-700 mb-4 border-b-2 border-slate-300 pb-2">Health & Disease</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <button id="vaccination-modal-open" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-rose-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50 text-left">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                                <svg class="w-16 h-16 text-rose-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Vaccination Schedules</h2>
+                            <p class="text-gray-600 mb-6">Standard protocols for dairy and beef cattle at different life stages.</p>
+                            <span class="inline-block bg-gradient-to-br from-rose-500 to-rose-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-rose-600 group-hover:to-rose-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-rose-500/40">View Schedules &rarr;</span>
+                        </div>
+                    </button>
+                    <a href="https://rony1103043.github.io/cattlediseaseaiincorporated2/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                                <svg class="w-16 h-16 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 01-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 013.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 013.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 01-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 21.75l-.648-1.188a2.25 2.25 0 01-1.423-1.423L13.5 18.75l1.188-.648a2.25 2.25 0 011.423-1.423L17.25 15l.648 1.188a2.25 2.25 0 011.423 1.423L20.5 18.75l-1.188.648a2.25 2.25 0 01-1.423 1.423z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Cattle Disease AI</h2>
+                            <p class="text-gray-600 mb-6">Advanced AI tool for diagnosis of cattle diseases.</p>
+                            <span class="inline-block bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-blue-500/40">Visit Site &rarr;</span>
+                        </div>
+                    </a>
+                    <a href="https://rony1103043.github.io/ronycattledisease-/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-teal-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
+                                <svg class="w-16 h-16 text-teal-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Disease Directory</h2>
+                            <p class="text-gray-600 mb-6">Comprehensive directory for various cattle diseases.</p>
+                            <span class="inline-block bg-gradient-to-br from-teal-500 to-teal-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-teal-600 group-hover:to-teal-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-teal-500/40">Explore Directory &rarr;</span>
+                        </div>
+                    </a>
                 </div>
-            </a>
-            <a href="https://akramulrony89-ops.github.io/beef-fattening-/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
-                <div class="flex flex-col items-center text-center">
-                     <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
-                        <svg class="w-16 h-16 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-3.976 5.198M21 3l-2.25 6.375" />
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Beef Fattening Planner</h2>
-                    <p class="text-gray-600 mb-6">Plan and manage your beef fattening operations for maximum growth.</p>
-                    <span class="inline-block bg-gradient-to-br from-orange-500 to-orange-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-orange-600 group-hover:to-orange-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-orange-500/40">
-                        Open Planner &rarr;
-                    </span>
-                </div>
-            </a>
-            <a href="https://akramulrony89-ops.github.io/ration/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-green-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
-                <div class="flex flex-col items-center text-center">
-                     <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
-                        <svg class="w-16 h-16 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path>
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Ration Calculator</h2>
-                    <p class="text-gray-600 mb-6">Online tool for calculating cattle feed rations.</p>
-                    <span class="inline-block bg-gradient-to-br from-green-500 to-green-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-green-600 group-hover:to-green-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-green-500/40">
-                        Use Calculator &rarr;
-                    </span>
-                </div>
-            </a>
-            
-            <!-- Row 2: Guides -->
-            <button id="housing-modal-open" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50 text-left">
-                <div class="flex flex-col items-center text-center">
-                    <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
-                        <svg class="w-16 h-16 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5-1.5-.5M5.25 7.136L3 8.25m8.25 3l-2.25 2.25m0 0l-2.25 2.25M10.5 13.5l2.25-2.25m2.25 2.25l2.25-2.25M15 11.25l-2.25 2.25" />
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Dairy Housing Guide</h2>
-                    <p class="text-gray-600 mb-6">Visual guide with measurements for optimal cattle housing.</p>
-                    <span class="inline-block bg-gradient-to-br from-amber-500 to-amber-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-amber-600 group-hover:to-amber-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-amber-500/40">
-                        View Guide &rarr;
-                    </span>
-                </div>
-            </button>
-            <button id="selection-modal-open" class="lg:col-span-2 group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50 text-left">
-                <div class="flex flex-col md:flex-row items-center text-center md:text-left md:space-x-8">
-                    <div class="mb-6 md:mb-0 h-32 w-32 flex-shrink-0 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
-                        <svg class="w-16 h-16 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Modern Breed Selection</h2>
-                        <p class="text-gray-600 mb-6">Explore the data-driven criteria world-renowned breeders use for selection.</p>
-                        <span class="inline-block bg-gradient-to-br from-indigo-500 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-indigo-600 group-hover:to-indigo-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-indigo-500/40">
-                            Learn More &rarr;
-                        </span>
-                    </div>
-                </div>
-            </button>
-            
-            <!-- Row 3: Main Calculator -->
-            <button id="fodder-modal-open" class="lg:col-span-3 group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50 text-left">
-                <div class="flex flex-col md:flex-row items-center text-center md:text-left md:space-x-8">
-                    <div class="mb-6 md:mb-0 h-32 w-32 flex-shrink-0 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
-                        <svg class="w-16 h-16 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Annual Feeds & Fodder Calculator</h2>
-                        <p class="text-gray-600 mb-6">Dynamically calculate total feed, fodder, and land requirements for Dairy, Beef, or Fattening operations. Click to start planning.</p>
-                        <span class="inline-block bg-gradient-to-br from-purple-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-purple-600 group-hover:to-purple-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-purple-500/40">
-                            Open Calculator &rarr;
-                        </span>
-                    </div>
-                </div>
-            </button>
-            
-             <!-- Row 4: Health & Disease Tools -->
-            <button id="vaccination-modal-open" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-rose-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50 text-left">
-                <div class="flex flex-col items-center text-center">
-                    <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
-                        <svg class="w-16 h-16 text-rose-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" />
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Vaccination Schedules</h2>
-                    <p class="text-gray-600 mb-6">Standard vaccination protocols for dairy and beef cattle at different life stages.</p>
-                    <span class="inline-block bg-gradient-to-br from-rose-500 to-rose-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-rose-600 group-hover:to-rose-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-rose-500/40">
-                        View Schedules &rarr;
-                    </span>
-                </div>
-            </button>
-            <a href="https://rony1103043.github.io/cattlediseaseaiincorporated2/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
-                <div class="flex flex-col items-center text-center">
-                    <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
-                        <svg class="w-16 h-16 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 01-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 013.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 013.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 01-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 21.75l-.648-1.188a2.25 2.25 0 01-1.423-1.423L13.5 18.75l1.188-.648a2.25 2.25 0 011.423-1.423L17.25 15l.648 1.188a2.25 2.25 0 011.423 1.423L20.5 18.75l-1.188.648a2.25 2.25 0 01-1.423 1.423z"></path>
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Cattle Disease AI</h2>
-                    <p class="text-gray-600 mb-6">Advanced AI tool for diagnosis of cattle diseases.</p>
-                    <span class="inline-block bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-blue-500/40">
-                        Visit Site &rarr;
-                    </span>
-                </div>
-            </a>
-            <a href="https://rony1103043.github.io/ronycattledisease-/" target="_blank" rel="noopener noreferrer" class="group block bg-white/60 backdrop-blur-lg p-8 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-teal-500/20 transition-all duration-300 transform hover:-translate-y-2 border border-white/50">
-                <div class="flex flex-col items-center text-center">
-                    <div class="mb-6 h-32 w-32 rounded-full bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-white">
-                        <svg class="w-16 h-16 text-teal-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Disease Directory</h2>
-                    <p class="text-gray-600 mb-6">Comprehensive directory for various cattle diseases.</p>
-                    <span class="inline-block bg-gradient-to-br from-teal-500 to-teal-600 text-white font-semibold py-3 px-6 rounded-lg group-hover:from-teal-600 group-hover:to-teal-700 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-teal-500/40">
-                        Explore Directory &rarr;
-                    </span>
-                </div>
-            </a>
+            </div>
         </div>
         
         <footer class="text-center mt-16 space-y-2">
@@ -1119,6 +1126,124 @@
             </div>
         </div>
     </div>
+    
+     <!-- Feeding Tech Modal -->
+    <div id="feeding-tech-modal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div id="feeding-tech-modal-overlay" class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-4xl mx-auto rounded-xl shadow-lg z-50 overflow-y-auto">
+            <div class="modal-content py-4 text-left px-6">
+                <!--Title-->
+                <div class="flex justify-between items-center pb-3 border-b">
+                    <p class="text-2xl font-bold text-gray-800">Modern Feeding Technologies</p>
+                    <div id="feeding-tech-modal-close" class="cursor-pointer z-50">
+                        <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 18 18">
+                            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <!--Body-->
+                <div class="my-5 max-h-[70vh] overflow-y-auto pr-4 space-y-2">
+                    <!-- Accordion Item 1 -->
+                    <div class="border-b">
+                        <button class="accordion-button flex justify-between items-center w-full py-4 text-left font-semibold text-lg text-gray-800">
+                            <span>Urea-Molasses Straw (UMS) & Blocks (UMB)</span>
+                            <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-4 pt-0 space-y-4 text-sm">
+                                <div>
+                                    <h4 class="font-bold text-gray-700">What It Is:</h4>
+                                    <p>A technique to improve the nutritional value and palatability of low-quality crop residues like rice straw, which are abundant in regions like Bangladesh. It provides supplemental non-protein nitrogen (urea) and readily available energy (molasses) to rumen microbes.</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-700">Method & Formulation:</h4>
+                                    <ul class="list-disc list-inside space-y-1">
+                                        <li><strong>UMS (Liquid Mix):</strong> A standard ratio is <strong>100kg of chopped straw : 15-20kg of molasses : 1kg of urea</strong>, dissolved in enough water to make the straw damp but not dripping. The mixture should be prepared daily.</li>
+                                        <li><strong>UMB (Solid Block):</strong> A typical formula is <strong>45% Molasses, 10% Urea, 10% Rice Bran, 10% Salt, 15% Mineral Mix, and 10% Binder (like cement or clay)</strong>. Ingredients are thoroughly mixed, pressed into a mold, and sun-dried until hard.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-700">Feeding Recommendations:</h4>
+                                    <p>UMS can be offered ad-libitum as a replacement for untreated straw. UMB blocks are provided for free-choice licking, with intake naturally limited to around 500-700g per day for adult cattle.</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-green-600">Advantages:</h4>
+                                    <p>Increases digestibility and intake of straw, boosts microbial protein synthesis in the rumen, improves animal body condition, and is a cost-effective supplement.</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-red-600">Constraints:</h4>
+                                    <p>Risk of urea toxicity if not mixed properly or if animals consume too much too quickly. UMB production can be labor-intensive.</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-indigo-600">Scientific Perspective:</h4>
+                                    <p>Research published in journals like *Tropical Animal Health and Production* consistently shows that UMS/UMB supplementation can mitigate weight loss during dry seasons and improve the overall productivity of animals on poor-quality forage diets.</p>
+                                </div>
+                                 <div class="p-4 bg-gray-100 rounded-lg mt-4">
+                                     <h4 class="font-bold text-gray-700">Daily UMS Requirement Calculator</h4>
+                                      <div class="grid grid-cols-2 gap-4 mt-2">
+                                        <div>
+                                            <label class="text-sm">Number of Adult Cattle:</label>
+                                            <input type="number" id="ums-herd-size" value="10" class="w-full p-1 border rounded" oninput="calculateUmsRequirements()">
+                                        </div>
+                                         <div>
+                                            <label class="text-sm">Daily Straw/Cow (kg):</label>
+                                            <input type="number" id="ums-straw-per-cow" value="5" class="w-full p-1 border rounded" oninput="calculateUmsRequirements()">
+                                        </div>
+                                      </div>
+                                      <div class="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
+                                          <div class="bg-white p-2 rounded"><p class="font-bold">Total Straw</p><span id="ums-total-straw">0</span> kg</div>
+                                          <div class="bg-white p-2 rounded"><p class="font-bold">Total Molasses</p><span id="ums-total-molasses">0</span> kg</div>
+                                          <div class="bg-white p-2 rounded"><p class="font-bold">Total Urea</p><span id="ums-total-urea">0</span> kg</div>
+                                      </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Accordion Item 2 -->
+                    <div class="border-b">
+                         <button class="accordion-button flex justify-between items-center w-full py-4 text-left font-semibold text-lg text-gray-800">
+                            <span>Urea-Treated Straw (Ammoniation)</span>
+                             <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content">
+                             <div class="p-4 pt-0 space-y-4 text-sm">
+                                 <p>Details about Urea-Treated Straw...</p>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Accordion Item 3 -->
+                    <div class="border-b">
+                         <button class="accordion-button flex justify-between items-center w-full py-4 text-left font-semibold text-lg text-gray-800">
+                            <span>Bypass Protein Technology</span>
+                             <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content">
+                             <div class="p-4 pt-0 space-y-4 text-sm">
+                                <p>Details about Bypass Protein...</p>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Accordion Item 4 -->
+                    <div class="border-b">
+                         <button class="accordion-button flex justify-between items-center w-full py-4 text-left font-semibold text-lg text-gray-800">
+                            <span>Precision & AI-Driven Feeding</span>
+                             <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-4 pt-0 space-y-4 text-sm">
+                                <p>Details about Precision Feeding...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!--Footer-->
+                <div class="flex justify-end pt-2 border-t mt-4">
+                    <button id="feeding-tech-modal-close-btn" class="px-4 bg-indigo-500 p-3 rounded-lg text-white hover:bg-indigo-400 transition-colors">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <script>
@@ -1148,6 +1273,8 @@
         const toggleSelectionModal = setupModal('selection-modal-open', 'selection-modal', 'selection-modal-overlay', 'selection-modal-close', 'selection-modal-close-btn');
         const toggleVaccinationModal = setupModal('vaccination-modal-open', 'vaccination-modal', 'vaccination-modal-overlay', 'vaccination-modal-close', 'vaccination-modal-close-btn');
         const toggleFodderModal = setupModal('fodder-modal-open', 'fodder-modal', 'fodder-modal-overlay', 'fodder-modal-close', 'fodder-modal-close-btn');
+        const toggleFeedingTechModal = setupModal('feeding-tech-modal-open', 'feeding-tech-modal', 'feeding-tech-modal-overlay', 'feeding-tech-modal-close', 'feeding-tech-modal-close-btn');
+
         
         // --- Tabbed Modals Setup ---
         function setupTabbedModal(modal) {
@@ -1472,6 +1599,7 @@
                 if (!document.getElementById('selection-modal').classList.contains('pointer-events-none')) toggleSelectionModal();
                 if (!document.getElementById('vaccination-modal').classList.contains('pointer-events-none')) toggleVaccinationModal();
                 if (!document.getElementById('fodder-modal').classList.contains('pointer-events-none')) toggleFodderModal();
+                if (!document.getElementById('feeding-tech-modal').classList.contains('pointer-events-none')) toggleFeedingTechModal();
             }
         });
         
@@ -1505,9 +1633,54 @@
         setupModeToggle('dairy-mode-toggle', 'dairy-recommendation-inputs', 'dairy-manual-inputs', updateFodderCalculator);
         setupModeToggle('fattening-mode-toggle', 'fattening-recommendation-inputs', 'fattening-manual-inputs', updateFodderCalculatorFattening);
 
+        // Accordion Logic for Feeding Tech
+        document.querySelectorAll('.accordion-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const accordionContent = button.nextElementSibling;
+                const icon = button.querySelector('svg');
+
+                button.classList.toggle('active');
+
+                if (button.classList.contains('active')) {
+                    accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    accordionContent.style.maxHeight = 0;
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            });
+        });
+        
+        // UMS Calculator
+        function calculateUmsRequirements() {
+            const herdSize = parseInt(document.getElementById('ums-herd-size').value) || 0;
+            const strawPerCow = parseFloat(document.getElementById('ums-straw-per-cow').value) || 0;
+            
+            const totalStraw = herdSize * strawPerCow;
+            const totalMolasses = totalStraw * (15/100); // Using 15kg molasses per 100kg straw
+            const totalUrea = totalStraw * (1/100); // Using 1kg urea per 100kg straw
+
+            document.getElementById('ums-total-straw').textContent = totalStraw.toFixed(1);
+            document.getElementById('ums-total-molasses').textContent = totalMolasses.toFixed(1);
+            document.getElementById('ums-total-urea').textContent = totalUrea.toFixed(1);
+        }
+        function calculateUtsRequirements() {
+            const strawAmount = parseFloat(document.getElementById('uts-straw-amount').value) || 0;
+            
+            const totalUrea = strawAmount * (4/100); // 4kg Urea per 100kg Straw
+            const totalWater = strawAmount * (50/100); // 50L water per 100kg Straw
+
+            document.getElementById('uts-total-urea').textContent = totalUrea.toFixed(1);
+            document.getElementById('uts-total-water').textContent = totalWater.toFixed(1);
+        }
+
+        document.getElementById('feeding-tech-modal-open').addEventListener('click', ()=>{
+            calculateUmsRequirements();
+            calculateUtsRequirements();
+        });
+
 
     </script>
 </body>
 </html>
-
 
